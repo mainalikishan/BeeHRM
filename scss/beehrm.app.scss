@@ -1,0 +1,175 @@
+// The path for our ionicons font files, relative to the built CSS in www/css
+// $font-path: "../lib/beehrm/fonts" !default;
+// fonts
+$primary-font: 'Lato', sans-serif;
+// colors
+$dark-primary: #424A52 !default;
+$primary: #3D4B55 !default;
+$light-primary: #CFD8DC !default;
+$text-icons: #FFFFFF !default;
+$dark-accent: #F8C300 !default;
+$accent: #FBCB34 !default;
+$primary-text: #212121 !default;
+$secondary-text: #C9C9C9 !default;
+$divider-color: #B6B6B6 !default;
+
+body {
+	font-family: $primary-font;
+    color: $primary-text;
+    font-size: 14px;
+    font-weight: 400;
+    letter-spacing: 1px;
+}
+
+// mixin
+@mixin button-variant($color, $background, $border) {
+  	border-color: $border;
+  	background-color: $background;
+  	color: $color;
+
+  	&.active,
+  	&.activated {
+    	border-color: $border;
+	    background-color: $border;
+	    box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.1);
+  	}
+	&:hover {
+		color: $color;
+	    text-decoration: none;
+	}
+	&.button-clear {
+	    border-color: transparent;
+	    background: none;
+	    box-shadow: none;
+	    color: $background;
+	}
+	&.button-icon {
+	    border-color: transparent;
+	    background: none;
+	}
+	&.button-outline {
+	    border-color: $background;
+	    background: transparent;
+	    color: $background;
+	}
+	&.button-outline.active,
+	&.button-outline.activated {
+	    background-color: $background;
+	    box-shadow: none;
+	    color: $color;
+	}
+}
+
+@mixin bar-variant($color, $background, $border) {
+	border-color: $border;
+	background-color: $background !important;
+	background-image: linear-gradient(0deg, $background, $background 50%, transparent 50%);
+	color: $color;
+
+	& .title {
+	    color: $color;
+	    background-color: $border;
+	}
+	& .button.button-clear {
+	    color: $color;
+	}
+}
+
+// buttons
+.button.button-primary {
+  @include button-variant($secondary-text, $primary, $dark-primary);
+}
+.button.button-accent {
+  @include button-variant($secondary-text, $dark-accent, $accent);
+}
+
+// bar
+.bar.bar-primary {
+  @include bar-variant($secondary-text, $primary, $dark-primary);
+}
+
+// badge
+.badge.badge-primary {
+  background-color: $dark-primary;
+  color: $secondary-text; 
+}
+
+.badge.badge-accent {
+  background-color: $dark-accent;
+  color: $primary; 
+}
+
+// sidebar
+.menu {
+    background-color: $primary;
+
+    .bar {
+	    border: 0 none;
+	}
+
+    .list {
+    	margin: 150px 0 0 15px;
+    }
+
+    .item {
+		background-color: $primary;
+		color: $secondary-text;
+		position: relative;
+		border-width: 0; 
+		font-size: 14px;
+
+		.menu-label {
+			padding-left: 5px;
+			font-size: 16px;
+		}
+
+		.active, 
+		.activated, 
+		.item-complex.active 
+		.item-content, 
+		.item-complex.activated .item-content, 
+		.item-content.active, 
+		.item-content.activated {
+			border: 0 none;
+			background-color: $primary; 
+		}
+	}
+
+	.item-content {
+		background-color: transparent;
+	}
+
+	.side-intro {
+		padding: 40px 0 0;
+		.media-profile {
+			padding: 0 90px;
+			img {
+			    max-width: 80px;
+			    border: 2px solid $dark-accent;
+			    border-radius: 50%;
+			}
+		}
+
+		.welcome-msg {
+			font-size: 1.2em;
+			text-align: center;
+    		padding: 10px 0 0;
+		}
+	}
+
+	i {
+		font-size:20px;
+		color: $dark-accent;
+	}
+}
+
+// tabs
+.tabs-icon-only {
+	.badge {
+		position: absolute;
+	    top: 2px;
+	    right: 40px;
+	}
+}
+
+
