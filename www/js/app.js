@@ -61,23 +61,25 @@ angular.module('starter', ['ionic', 'ngFx', 'ngAnimate', 'ionic-datepicker', 'st
         }
     })
 
-    .state('app.browse', {
-            url: '/browse',
-            views: {
-                'menuContent': {
-                    templateUrl: 'templates/browse.html'
-                }
+    .state('app.leaves', {
+        url: '/leaves',
+        views: {
+            'menuContent': {
+                templateUrl: 'templates/leaves.html',
+                controller: 'LeavesCtrl'
             }
-        })
-        .state('app.leaves', {
-            url: '/leaves',
-            views: {
-                'menuContent': {
-                    templateUrl: 'templates/leaves.html',
-                    controller: 'LeavesCtrl'
-                }
+        }
+    })
+
+    .state('app.leavesBalance', {
+        url: '/leaves-balance',
+        views: {
+            'menuContent': {
+                templateUrl: 'templates/leaves.balance.html',
+                controller: 'LeavesCtrl'
             }
-        })
+        }
+    })
 
     .state('app.leave', {
         url: '/leaves/:leaveId',
@@ -112,7 +114,6 @@ angular.module('starter', ['ionic', 'ngFx', 'ngAnimate', 'ionic-datepicker', 'st
     //directly binding events to this context
     this.goNative = function(direction, transitiontype) {
         $ionicPlatform.ready(function() {
-
             switch (transitiontype) {
                 case "slide":
                     window.plugins.nativepagetransitions.slide({
@@ -202,42 +203,82 @@ angular.module('starter', ['ionic', 'ngFx', 'ngAnimate', 'ionic-datepicker', 'st
         link: function($scope, $el, attrs) {
             var direction = attrs.direction;
             var transitiontype = attrs.transitiontype;
-            $scope.$on("$ionicView.beforeEnter", function() {
+            $scope.$on("$stateChangeStart", function() {
+                console.log(direction);
                 Navigation.goNative(direction, transitiontype);
             });
         }
     };
 })
 
-.directive('hideFooter', function($rootScope) {
+.directive('showFooter', function($rootScope) {
     return {
         restrict: 'A',
         link: function($scope, $el) {
-            if(!$rootScope.hideFooter) {
+            if (!$rootScope.showFooter) {
                 $scope.$on("$ionicView.beforeEnter", function() {
-                    $rootScope.hideFooter = true;
+                    console.log('I am showing footer');
+                    $rootScope.showFooter = true;
                 });
                 $scope.$on("$stateChangeStart", function() {
-                    $rootScope.hideFooter = false;
+                    console.log('I am hiding footer');
+                    $rootScope.showFooter = false;
                 });
             }
         }
     };
 })
 
-.directive('hideTabs', function($rootScope) {
+.directive('showTabs', function($rootScope) {
     return {
         restrict: 'A',
         link: function($scope, $el) {
-            if (!$rootScope.hideTabs) {
+            if (!$rootScope.showTabs) {
                 $scope.$on("$ionicView.beforeEnter", function() {
-                    $rootScope.hideTabs = true;
+                    console.log('I am showing tabs');
+                    $rootScope.showTabs = true;
                 });
                 $scope.$on("$stateChangeStart", function() {
-                    $rootScope.hideTabs = false;
+                    console.log('I am hiding tabs');
+                    $rootScope.showTabs = false;
                 });
             }
         }
     };
 })
-;
+
+.directive('showLeaveFooter', function($rootScope) {
+    return {
+        restrict: 'A',
+        link: function($scope, $el) {
+            if (!$rootScope.showLeaveFooter) {
+                $scope.$on("$ionicView.beforeEnter", function() {
+                    console.log('I am showing leave footer');
+                    $rootScope.showLeaveFooter = true;
+                });
+                $scope.$on("$stateChangeStart", function() {
+                    console.log('I am hiding leave footer');
+                    $rootScope.showLeaveFooter = false;
+                });
+            }
+        }
+    };
+})
+
+.directive('showLeaveTabs', function($rootScope) {
+    return {
+        restrict: 'A',
+        link: function($scope, $el) {
+            if (!$rootScope.showLeaveTabs) {
+                $scope.$on("$ionicView.beforeEnter", function() {
+                    console.log('I am showing leave tabs');
+                    $rootScope.showLeaveTabs = true;
+                });
+                $scope.$on("$stateChangeStart", function() {
+                    console.log('I am hiding leave tabs');
+                    $rootScope.showLeaveTabs = false;
+                });
+            }
+        }
+    };
+});

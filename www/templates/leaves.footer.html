@@ -1,0 +1,13 @@
+<div ng-controller="ApplyLeaveCtrl">
+    <footer class="bar bar-footer bar-balanced has-tabs" ng-click="applyLeave()" ng-show="$root.showLeaveFooter">
+        <h3 class="title">APPLY FOR LEAVE</h3>
+    </footer>
+    <ion-tabs class="tabs-primary tabs-icon-top" ng-show="$root.showLeaveTabs">
+        <ion-tab title="Leaves" icon-on="ion-ios-list" icon-off="ion-ios-list-outline" href="#/app/leaves">
+            <!-- Tab 1 content -->
+        </ion-tab>
+        <ion-tab title="Balance" icon-on="ion-ios-pie" icon-off="ion-ios-pie-outline" href="#/app/leaves-balance">
+            <!-- Tab 2 content -->
+        </ion-tab>
+    </ion-tabs>
+</div>

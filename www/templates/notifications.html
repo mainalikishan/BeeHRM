@@ -1,15 +1,11 @@
-<ion-view view-title="Notifications" 
+<ion-view view-title="Notifications"
 transitiontype="slide" direction="right" go-native 
-hide-footer>
+show-tabs>
     <ion-content>
         <ion-list show-delete="data.showDelete" show-reorder="data.showReorder">
-
-        <ion-item ng-repeat="item in items" 
-                  item="item"
-                  href="#/item/{{item.id}}" class="item-remove-animate">
-          {{ item.title }}
-        </ion-item>
-
-      </ion-list>
+            <ion-item ng-repeat="item in items" item="item" href="#/item/{{item.id}}" class="item-remove-animate">
+                {{ item.title }}
+            </ion-item>
+        </ion-list>
     </ion-content>
 </ion-view>

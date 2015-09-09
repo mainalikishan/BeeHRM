@@ -1,5 +1,7 @@
-<ion-view view-title="My Leaves" transitiontype="slide" direction="left" go-native hide-tabs hide-footer>
-    <ion-content class="list-page has-footer">
+<ion-view view-title="My Leaves"
+transitiontype="slide" direction="left" go-native
+show-leave-tabs show-leave-footer>
+    <ion-content class="list-page has-footer has-tabs">
         <ion-list>
             <ion-item ng-repeat="item in items" item="item" href="#/app/leaves/{{item.id}}" class="item-remove-animate item-icon-list">
                 <h2>{{ item.title }}</h2>
@@ -10,6 +12,4 @@
         </ion-list>
     </ion-content>
 </ion-view>
-<ion-footer-bar align-title="left" class="bar-balanced" ng-click="applyLeave()">
-    <h3 class="title">APPLY FOR LEAVE</h3>
-</ion-footer-bar>
+

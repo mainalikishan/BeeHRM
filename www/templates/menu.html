@@ -1,7 +1,7 @@
 <ion-side-menus enable-menu-with-back-views="false">
     <ion-side-menu-content>
         <ion-nav-bar class="bar-primary">
-            <ion-nav-back-button transitiontype="slide" direction="left" go-native>
+            <ion-nav-back-button>
             </ion-nav-back-button>
             <ion-nav-buttons side="left">
                 <button class="button button-icon button-clear ion-navicon" menu-toggle="left">
@@ -9,22 +9,10 @@
             </ion-nav-buttons>
         </ion-nav-bar>
         <ion-nav-view name="menuContent">
-            <footer class="bar bar-footer bar-balanced has-tabs" ng-hide="$root.hideFooter">
-              <h3 class="title">CHECK IN</h3>
-            </footer>
-
-            <ion-tabs class="tabs-primary tabs-icon-only" ng-hide="$root.hideTabs">
-                <ion-tab title="Home" icon-on="ion-ios-home" icon-off="ion-ios-home-outline" href="#/app/dashboard">
-                    <!-- Tab 1 content -->
-                </ion-tab>
-                <ion-tab title="Messages" icon-on="ion-ios-calendar" icon-off="ion-ios-calendar-outline" href="#/app/messages">
-                    <!-- Tab 2 content -->
-                </ion-tab>
-                <ion-tab title="Notifications" icon-on="ion-ios-bell" icon-off="ion-ios-bell-outline" href="#/app/notifications">
-                    <!-- Tab 3 content -->
-                </ion-tab>
-                <div class="badge badge-accent">2</div>
-            </ion-tabs>
+            <!-- dashbaord -->
+            <ng-include src="'templates/dashboard.footer.html'"></ng-include>
+            <!-- leaves -->
+            <ng-include src="'templates/leaves.footer.html'"></ng-include>
         </ion-nav-view>
     </ion-side-menu-content>
     <ion-side-menu side="left">

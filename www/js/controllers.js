@@ -1,6 +1,7 @@
 angular.module('starter.controllers', [])
 
-.controller('AppCtrl', function($scope, $ionicModal, $timeout) {
+.controller('AppCtrl', function($scope, $rootScope, $ionicModal, $timeout) {
+
     // With the new view caching in Ionic, Controllers are only called
     // when they are recreated or on app start, instead of every page change.
     // To listen for when this page is active (for example, to refresh data),
@@ -87,100 +88,11 @@ angular.module('starter.controllers', [])
 })
 
 
-.controller('LeavesCtrl', function($scope, $ionicModal, $timeout) {
-    // Form data for the leave modal
-    $scope.options = [{ name: "Paid", id: 1 }, { name: "Unpaid", id: 2 }];
-    $scope.leaveData = {
-        'leaveType': $scope.options[1],
-    };
-
-    // Create the leave modal that we will use later
-    $ionicModal.fromTemplateUrl('templates/applyLeave.html', {
-        scope: $scope
-    }).then(function(modal) {
-        $scope.modal = modal;
-    });
-
-    // Triggered in the leave modal to close it
-    $scope.closeLeave = function() {
-        $scope.modal.hide();
-    };
-
-    // Open the leave modal
-    $scope.applyLeave = function() {
-        $scope.modal.show();
-    };
-
-    // Perform the leave action when the user submits the leave form
-    $scope.doLeave = function() {
-        console.log('Doing leave', $scope.leaveData);
-
-        // Simulate a leave delay. Remove this and replace with your leave
-        // code if using a leave system
-        $timeout(function() {
-            $scope.closeLeave();
-        }, 1000);
-    };
+.controller('LeavesCtrl', function($scope) {
 
     $scope.expandText = function() {
         var element = document.getElementById("txtnotes");
         element.style.height = element.scrollHeight + "px";
-    };
-
-    $scope.startDatepickerObject = {
-        titleLabel: 'Select Date', //Optional
-        todayLabel: 'Today', //Optional
-        closeLabel: 'Close', //Optional
-        setLabel: 'Set', //Optional
-        setButtonType : 'button-balanced button-outline',  //Optional
-        todayButtonType : 'button-balanced button-outline',  //Optional
-        closeButtonType : 'button-balanced button-outline',  //Optional
-        mondayFirst: true, //Optional
-        templateType: 'popup', //Optional
-        modalHeaderColor: 'bar-primary', //Optional
-        modalFooterColor: 'bar-primary', //Optional
-        callback: function(val) { //Mandatory
-            startDatePickerCallback(val);
-        }
-    };
-
-    $scope.startDate = new Date();
-
-    var startDatePickerCallback = function(val) {
-        if (typeof(val) === 'undefined') {
-            console.log('No date selected');
-        } else {
-            $scope.startDate = val;
-            console.log('Selected date is : ', val);
-        }
-    };
-
-    $scope.endDatepickerObject = {
-        titleLabel: 'Select Date', //Optional
-        todayLabel: 'Today', //Optional
-        closeLabel: 'Close', //Optional
-        setLabel: 'Set', //Optional
-        setButtonType : 'button-balanced button-outline',  //Optional
-        todayButtonType : 'button-balanced button-outline',  //Optional
-        closeButtonType : 'button-balanced button-outline',  //Optional
-        mondayFirst: true, //Optional
-        templateType: 'popup', //Optional
-        modalHeaderColor: 'bar-primary', //Optional
-        modalFooterColor: 'bar-primary', //Optional
-        callback: function(val) { //Mandatory
-            endDatePickerCallback(val);
-        }
-    };
-
-    $scope.endDate = new Date();
-
-    var endDatePickerCallback = function(val) {
-        if (typeof(val) === 'undefined') {
-            console.log('No date selected');
-        } else {
-            $scope.endDate = val;
-            console.log('Selected date is : ', val);
-        }
     };
 
     $scope.items = [{
@@ -232,6 +144,106 @@ angular.module('starter.controllers', [])
 
 })
 
-.controller('LeaveCtrl', function($scope, $stateParams) {
+.controller('LeaveCtrl', function($scope) {
 
-});
+})
+
+.controller('ApplyLeaveCtrl', function($scope, $ionicModal, $timeout) {
+
+    // Form data for the leave modal
+    $scope.options = [{
+        name: "Paid",
+        id: 1
+    }, {
+        name: "Unpaid",
+        id: 2
+    }];
+    $scope.leaveData = {
+        'leaveType': $scope.options[1],
+    };
+
+    // Create the leave modal that we will use later
+    $ionicModal.fromTemplateUrl('templates/leave.apply.html', {
+        scope: $scope
+    }).then(function(modal) {
+        $scope.modal = modal;
+    });
+
+    // Triggered in the leave modal to close it
+    $scope.closeLeave = function() {
+        $scope.modal.hide();
+    };
+
+    // Open the leave modal
+    $scope.applyLeave = function() {
+        $scope.modal.show();
+    };
+
+    // Perform the leave action when the user submits the leave form
+    $scope.doLeave = function() {
+        console.log('Doing leave', $scope.leaveData);
+
+        // Simulate a leave delay. Remove this and replace with your leave
+        // code if using a leave system
+        $timeout(function() {
+            $scope.closeLeave();
+        }, 1000);
+    };
+
+    $scope.startDatepickerObject = {
+        titleLabel: 'Select Date', //Optional
+        todayLabel: 'Today', //Optional
+        closeLabel: 'Close', //Optional
+        setLabel: 'Set', //Optional
+        setButtonType: 'button-balanced button-outline', //Optional
+        todayButtonType: 'button-balanced button-outline', //Optional
+        closeButtonType: 'button-balanced button-outline', //Optional
+        mondayFirst: true, //Optional
+        templateType: 'popup', //Optional
+        modalHeaderColor: 'bar-primary', //Optional
+        modalFooterColor: 'bar-primary', //Optional
+        callback: function(val) { //Mandatory
+            startDatePickerCallback(val);
+        }
+    };
+
+    $scope.startDate = new Date();
+
+    var startDatePickerCallback = function(val) {
+        if (typeof(val) === 'undefined') {
+            console.log('No date selected');
+        } else {
+            $scope.startDate = val;
+            console.log('Selected date is : ', val);
+        }
+    };
+
+    $scope.endDatepickerObject = {
+        titleLabel: 'Select Date', //Optional
+        todayLabel: 'Today', //Optional
+        closeLabel: 'Close', //Optional
+        setLabel: 'Set', //Optional
+        setButtonType: 'button-balanced button-outline', //Optional
+        todayButtonType: 'button-balanced button-outline', //Optional
+        closeButtonType: 'button-balanced button-outline', //Optional
+        mondayFirst: true, //Optional
+        templateType: 'popup', //Optional
+        modalHeaderColor: 'bar-primary', //Optional
+        modalFooterColor: 'bar-primary', //Optional
+        callback: function(val) { //Mandatory
+            endDatePickerCallback(val);
+        }
+    };
+
+    $scope.endDate = new Date();
+
+    var endDatePickerCallback = function(val) {
+        if (typeof(val) === 'undefined') {
+            console.log('No date selected');
+        } else {
+            $scope.endDate = val;
+            console.log('Selected date is : ', val);
+        }
+    };
+})
+;
