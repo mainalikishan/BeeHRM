@@ -7,11 +7,12 @@ var minifyCss = require('gulp-minify-css');
 var rename = require('gulp-rename');
 var sh = require('shelljs');
 
+
 var paths = {
   sass: ['./scss/**/*.scss']
 };
 
-gulp.task('default', ['sass']);
+gulp.task('default', ['sass','jsplugins']);
 
 gulp.task('sass', function(done) {
   gulp.src('./scss/beehrm.app.scss')
@@ -28,7 +29,7 @@ gulp.task('sass', function(done) {
 });
 
 gulp.task('watch', function() {
-  gulp.watch(paths.sass, ['sass']);
+  gulp.watch(paths.sass, ['sass','jsplugins']);
 });
 
 gulp.task('install', ['git-check'], function() {
@@ -49,4 +50,12 @@ gulp.task('git-check', function(done) {
     process.exit(1);
   }
   done();
+});
+
+// beeHRM
+gulp.task('jsplugins', function(){
+    return gulp.src(
+      ['www/lib/ngFx/dist/ngFx.min.js'])
+      .pipe(concat('plugins.min.js'))
+      .pipe(gulp.dest('www/lib/beehrm'))
 });

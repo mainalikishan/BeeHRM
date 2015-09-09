@@ -1,25 +1,33 @@
-<ion-view view-title="Dashbaord">
-    <ion-content class="has-header has-tabs-top">
-        <ion-list show-delete="data.showDelete" show-reorder="data.showReorder">
+<ion-view view-title="BeeHRM" 
+transitiontype="slide" direction="left" go-native>
+    <ion-content class="has-footer has-tabs">
+        <div class="dashboard">
+            <div class="profile-bg" style="background-image: url(img/profile-bg.jpg);">
+                <div class="profile-bg-overlay"></div>
+                <div class="profile">
+                    <div class="text-center" style="margin: 0 auto;">
+                        <img src="img/profile.jpg" class="img-circle img-centered profile-pic" alt="">
+                        <div class="profile-name">
+                            Keshav Oli
+                        </div>
+                        <div class="profile-deg">
+                            Jr. Customer Support
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <ion-list>
+				<div class="item item-divider">
+				   <i class="ion-speakerphone"></i> Bulletin Board
+				</div>
+		        <ion-item ng-repeat="item in items" 
+		                  item="item"
+		                  href="#/item/{{item.id}}" class="fx-fade-left fx-speed-2000">
+		          <h2>{{ item.title }}</h2>
+		          <p><i class="ion-ios-clock-outline"></i> {{ item.dt }}</p>
+		        </ion-item>
 
-        <ion-item ng-repeat="item in items" 
-                  item="item"
-                  href="#/item/{{item.id}}" class="item-remove-animate">
-          {{ item.title }}
-          <ion-delete-button class="ion-minus-circled" 
-                             ng-click="onItemDelete(item)">
-          </ion-delete-button>
-          <ion-option-button class="button-assertive"
-                             ng-click="edit(item)">
-            Edit
-          </ion-option-button>
-          <ion-option-button class="button-calm"
-                             ng-click="share(item)">
-            Share
-          </ion-option-button>
-          <ion-reorder-button class="ion-navicon" on-reorder="moveItem(item, $fromIndex, $toIndex)"></ion-reorder-button>
-        </ion-item>
-
-      </ion-list>
+		      </ion-list>
+        </div>
     </ion-content>
 </ion-view>

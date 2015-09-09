@@ -1,26 +1,29 @@
 <ion-side-menus enable-menu-with-back-views="false">
     <ion-side-menu-content>
         <ion-nav-bar class="bar-primary">
-            <ion-nav-back-button>
+            <ion-nav-back-button transitiontype="slide" direction="left" go-native>
             </ion-nav-back-button>
             <ion-nav-buttons side="left">
-                <button class="button button-icon button-clear ion-navicon-round" menu-toggle="left">
+                <button class="button button-icon button-clear ion-navicon" menu-toggle="left">
                 </button>
             </ion-nav-buttons>
         </ion-nav-bar>
         <ion-nav-view name="menuContent">
-            <ion-tabs class="tabs-stable tabs-icon-only">
+            <footer class="bar bar-footer bar-balanced has-tabs" ng-hide="$root.hideFooter">
+              <h3 class="title">CHECK IN</h3>
+            </footer>
+
+            <ion-tabs class="tabs-primary tabs-icon-only" ng-hide="$root.hideTabs">
                 <ion-tab title="Home" icon-on="ion-ios-home" icon-off="ion-ios-home-outline" href="#/app/dashboard">
                     <!-- Tab 1 content -->
                 </ion-tab>
-                <ion-tab title="Messages" icon-on="ion-ios-chatboxes" icon-off="ion-ios-chatboxes-outline" href="#/app/messages">
+                <ion-tab title="Messages" icon-on="ion-ios-calendar" icon-off="ion-ios-calendar-outline" href="#/app/messages">
                     <!-- Tab 2 content -->
                 </ion-tab>
                 <ion-tab title="Notifications" icon-on="ion-ios-bell" icon-off="ion-ios-bell-outline" href="#/app/notifications">
-                                    
-                  <!-- Tab 3 content -->
+                    <!-- Tab 3 content -->
                 </ion-tab>
-                <div class="badge badge-primary">5</div>  
+                <div class="badge badge-accent">2</div>
             </ion-tabs>
         </ion-nav-view>
     </ion-side-menu-content>
@@ -28,25 +31,25 @@
         <ion-header-bar class="bar-primary">
             <div class="side-intro">
                 <div class="media-profile">
-                    <img src="./img/profile.jpg">
+                    <img src="./img/profile.jpg" class="img-circle">
                 </div>
                 <div class="welcome-msg">Hi, Keshav</div>
             </div>
         </ion-header-bar>
         <ion-content>
             <ion-list>
-                <ion-item menu-close ng-click="login()">
-                    <i class="ion-ios-briefcase-outline"></i> <span class="menu-label">Profile</span>
+                <ion-item menu-close href="#/app/dashboard">
+                    <i class="icon ion-ios-briefcase-outline"></i> <span class="menu-label">Dashboard</span>
                 </ion-item>
-                <ion-item menu-close href="#/app/search">
-                    <i class="ion-ios-calendar-outline"></i> <span class="menu-label">Leave</span>
+                <ion-item menu-close href="#/app/leaves">
+                    <i class="icon ion-ios-calendar-outline"></i> <span class="menu-label">Leave</span>
                     <span class="badge badge-accent">1</span>
                 </ion-item>
-                <ion-item menu-close href="#/app/browse">
-                    <i class="ion-ios-list-outline"></i> <span class="menu-label">Pay Slip</span>
+                <ion-item menu-close href="#/app/notifications" ng-click="hideFooterForMe()">
+                    <i class="icon ion-ios-list-outline"></i> <span class="menu-label">PaySlip</span>
                 </ion-item>
-                <ion-item menu-close href="#/app/playlists">
-                    <i class="ion-ios-download-outline"></i> <span class="menu-label">Log Out</span>
+                <ion-item menu-close href="#/app/playlists" ng-click="hideFooterForMe()">
+                    <i class="icon ion-log-out"></i> <span class="menu-label">LogOut</span>
                 </ion-item>
             </ion-list>
         </ion-content>
