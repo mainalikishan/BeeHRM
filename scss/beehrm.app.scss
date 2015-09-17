@@ -1,11 +1,33 @@
 // The path for our ionicons font files, relative to the built CSS in www/css
-// $font-path: "../lib/beehrm/fonts" !default;
+$font-path: "../lib/beehrm/fonts";
 // fonts
-$primary-font: 'Roboto', sans-serif;
+@font-face {
+    font-family: Roboto;
+    src: url("#{$font-path}/Roboto-Regular.woff2?v=1.1.0") format("woff2"), url("#{$font-path}/Roboto-Regular.woff?v=1.1.0") format("woff");
+    font-weight: 400;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: Roboto;
+    src: url("#{$font-path}/Roboto-Medium.woff2?v=1.1.0") format("woff2"), url("#{$font-path}/Roboto-Medium.woff?v=1.1.0") format("woff");
+    font-weight: 500;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: Roboto;
+    src: url("#{$font-path}/Roboto-Bold.woff2?v=1.1.0") format("woff2"), url("#{$font-path}/Roboto-Bold.woff?v=1.1.0") format("woff");
+    font-weight: 700;
+    font-style: normal;
+}
+
+$primary-font: 'Roboto',
+sans-serif;
 // colors
 $dark-primary: #424A52 !default;
 $primary: #3D4B55 !default;
-$light-primary: #CFD8DC !default;
+$light-primary: #EEEEEE !default;
 $text-icons: #FFFFFF !default;
 $dark-accent: #F8C300 !default;
 $accent: #FBCB34 !default;
@@ -14,22 +36,31 @@ $secondary-text: #CFC7AD !default;
 $divider-color: #B6B6B6 !default;
 $alt-bg-color: #D7D8DB !default;
 $white-color: #FFFFFF !default;
-
 body {
-	font-family: $primary-font;
+    font-family: $primary-font;
     color: $primary-text;
     font-size: 14px;
     font-weight: 400;
-    letter-spacing: 1px;
+    letter-spacing: 0.5px;
 }
 
-h1, h2, h3, h4, h5, h6, 
-.h1, .h2, .h3, .h4, .h5, .h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.h1,
+.h2,
+.h3,
+.h4,
+.h5,
+.h6 {
     color: $primary-text;
 }
 
 .alt-bg {
-	background-color: $alt-bg-color;
+    background-color: $alt-bg-color;
 }
 
 .img-circle {
@@ -41,290 +72,401 @@ h1, h2, h3, h4, h5, h6,
 }
 
 // mixin
-@mixin button-variant($color, $background, $border) {
-  	border-color: $border;
-  	background-color: $background;
-  	color: $color;
-
-  	&.active,
-  	&.activated {
-    	border-color: $border;
-	    background-color: $border;
-	    box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.1);
-  	}
-	&:hover {
-		color: $color;
-	    text-decoration: none;
-	}
-	&.button-clear {
-	    border-color: transparent;
-	    background: none;
-	    box-shadow: none;
-	    color: $background;
-	}
-	&.button-icon {
-	    border-color: transparent;
-	    background: none;
-	}
-	&.button-outline {
-	    border-color: $background;
-	    background: transparent;
-	    color: $background;
-	}
-	&.button-outline.active,
-	&.button-outline.activated {
-	    background-color: $background;
-	    box-shadow: none;
-	    color: $color;
-	}
+@mixin button-variant($color,
+$background,
+$border) {
+    border-color: $border;
+    background-color: $background;
+    color: $color;
+    &.active,
+    &.activated {
+        border-color: $border;
+        background-color: $border;
+        box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.1);
+    }
+    &:hover {
+        color: $color;
+        text-decoration: none;
+    }
+    &.button-clear {
+        border-color: transparent;
+        background: none;
+        box-shadow: none;
+        color: $background;
+    }
+    &.button-icon {
+        border-color: transparent;
+        background: none;
+    }
+    &.button-outline {
+        border-color: $background;
+        background: transparent;
+        color: $background;
+    }
+    &.button-outline.active,
+    &.button-outline.activated {
+        background-color: $background;
+        box-shadow: none;
+        color: $color;
+    }
 }
 
-@mixin bar-variant($color, $background, $border) {
-	border-color: $border;
-	background-color: $background !important;
-	background-image: linear-gradient(0deg, $background, $background 50%, transparent 50%);
-	color: $color;
-
-	& .title {
-	    color: $color;
-	    background-color: $background;
-	}
-	& .button.button-clear {
-	    color: $color;
-	}
+@mixin bar-variant($color,
+$background,
+$border) {
+    border-color: $border;
+    background-color: $background !important;
+    background-image: linear-gradient(0deg, $background, $background 50%, transparent 50%);
+    color: $color;
+    & .title {
+        color: $color;
+        background-color: $background;
+    }
+    & .button.button-clear {
+        color: $color;
+    }
 }
 
-@mixin tab-variant($color, $background, $border, $altbg) {
-	& > .tabs {
-	  border-color: $border;
-	  background-color: $background;
-	  background-image: linear-gradient(0deg, $background, $background 50%, transparent 50%);
-	  color: $color; }
-	  & > .tabs .tab-item .badge {
-	    background-color: $altbg;
-	    color: $background; 
-	}
+@mixin tab-variant($color,
+$background,
+$border,
+$altbg) {
+    & > .tabs {
+        border-color: $border;
+        background-color: $background;
+        background-image: linear-gradient(0deg, $background, $background 50%, transparent 50%);
+        color: $color;
+    }
+    & > .tabs .tab-item .badge {
+        background-color: $altbg;
+        color: $background;
+    }
 }
 
 // buttons
 .button.button-primary {
-  @include button-variant($secondary-text, $primary, $dark-primary);
+    @include button-variant($secondary-text,
+    $primary,
+    $dark-primary);
 }
+
 .button.button-accent {
-  @include button-variant($white-color, $dark-accent, $accent);
+    @include button-variant($white-color,
+    $dark-accent,
+    $accent);
 }
 
 // bar
 .bar-footer {
-	padding: 27px 0;
-	.title {
-		text-transform: uppercase;
-	    padding-top: 5px;
-	    font-size:16px !important;
-	}
+    padding: 27px 0;
+    .title {
+        text-transform: uppercase;
+        padding-top: 5px;
+        font-size: 16px !important;
+    }
 }
+
 .bar.bar-primary {
-  @include bar-variant($secondary-text, $primary, $dark-primary);
+    @include bar-variant($secondary-text,
+    $primary,
+    $dark-primary);
 }
+
 .bar.bar-accent {
-  @include bar-variant($white-color, $dark-accent, $accent);
+    @include bar-variant($white-color,
+    $dark-accent,
+    $accent);
 }
 
 // badge
 .badge.badge-primary {
-  background-color: $dark-primary;
-  color: $secondary-text; 
+    background-color: $dark-primary;
+    color: $secondary-text;
 }
 
 .badge.badge-accent {
-  background-color: $dark-accent;
-  color: $primary; 
+    background-color: $dark-accent;
+    color: $primary;
 }
 
 // tabs
 .tabs-icon-only {
-	.badge {
-		position: absolute;
-	    top: 4px;
-	    right: 36px;
-	    padding: 2px 6px;
-	}
+    .badge {
+        position: absolute;
+        top: 4px;
+        right: 36px;
+        padding: 2px 6px;
+    }
 }
+
 .tabs-primary {
-	@include tab-variant($secondary-text, $primary, $dark-primary, $dark-accent);
+    @include tab-variant($secondary-text,
+    $primary,
+    $dark-primary,
+    $dark-accent);
 }
 
 // list
 .list {
-	.icon {
-		left: 11px;
-	    display: flex;
-	    align-items: center;
-	    position: absolute;
-	    top: 0;
-	    height: 100%;
-	}
+    .icon {
+        left: 11px;
+        display: flex;
+        align-items: center;
+        position: absolute;
+        top: 0;
+        height: 100%;
+    }
 }
 
 // item
 .item {
-	.left-icon {
-	    position: absolute;
-	    top: 16px;
-	    left: 23px;
-	    max-width: 40px;
-	    max-height: 40px;
-	    font-size: 40px;
-	}
+    .left-icon {
+        position: absolute;
+        top: 16px;
+        left: 23px;
+        max-width: 40px;
+        max-height: 40px;
+        font-size: 40px;
+    }
     .item-divider {
-		color: $primary-text;
-	}
+        color: $primary-text;
+    }
 }
-
-
 
 // sidebar
 .menu {
     background-color: $primary;
-
     .bar {
-	    border: 0 none;
-	}
-
-    .list {
-    	margin: 150px 0 0 15px;
+        border: 0 none;
     }
-
+    .list {
+        margin: 150px 0 0 15px;
+    }
     .item {
-		background-color: $primary;
-		color: $secondary-text;
-		position: relative;
-		border-width: 0; 
-		font-size: 14px;
-		position: relative;
-		.menu-label {
-			margin-left: 20px;
-    		font-size: 100%;
-    		font-weight: 500;
-		}
-
-		.active, 
-		.activated, 
-		.item-complex.active 
-		.item-content, 
-		.item-complex.activated .item-content, 
-		.item-content.active, 
-		.item-content.activated {
-			border: 0 none;
-			background-color: $primary; 
-		}
-	}
-
-	.item-content {
-		background-color: transparent;
-	}
-
-	.side-intro {
-		padding: 40px 0 0;
-		.media-profile {
-			padding: 0 90px;
-			img {
-			    max-width: 80px;
-			    border: 2px solid $dark-accent;
-			}
-		}
-
-		.welcome-msg {
-			font-size: 1.2em;
-			text-align: center;
-    		padding: 10px 0 0;
-		}
-	}
-
-	i {
-		font-size:24px;
-		color: $dark-accent;
-	}
+        background-color: $primary;
+        color: $secondary-text;
+        position: relative;
+        border-width: 0;
+        font-size: 14px;
+        position: relative;
+        .menu-label {
+            margin-left: 20px;
+            font-size: 100%;
+            font-weight: 500;
+        }
+        .active,
+        .activated,
+        .item-complex.active .item-content,
+        .item-complex.activated .item-content,
+        .item-content.active,
+        .item-content.activated {
+            border: 0 none;
+            background-color: $primary;
+        }
+    }
+    .item-content {
+        background-color: transparent;
+    }
+    .side-intro {
+        padding: 40px 0 0;
+        .media-profile {
+            padding: 0 90px;
+            img {
+                max-width: 80px;
+                border: 2px solid $dark-accent;
+            }
+        }
+        .welcome-msg {
+            font-size: 1.2em;
+            text-align: center;
+            padding: 10px 0 0;
+        }
+    }
+    i {
+        font-size: 24px;
+        color: $dark-accent;
+    }
 }
 
 // dashboard
 .dashboard {
-	.profile-bg {
-	    display: block;
-	    position: relative;
-	    width: auto;
-	    height: auto;
-	    padding: 100px 0;
-	    max-height: 100%;
-	    background: no-repeat center center;
-	    background-color: $dark-primary;
-	    background-attachment: scroll;
-	    -webkit-background-size: cover;
-	    background-size: cover;
-	}
-	.profile-bg-overlay {
-	    background-color: rgba(66, 74, 82, .8);
-	    z-index: 2;
-	    position: absolute;
-	    top: 0;
-	    left: 0;
-	    width: 100%;
-	    height: 100%;
-	}
-	.profile {
-	    z-index: 3;
-	    position: absolute;
-	    top: 15px;
-	    left: 0;
-	    width: 100%;
-	}
-	.profile-pic {
-	    width: 100px;
-	    /*border: 2px solid #eee;*/
-	    vertical-align: middle;
-	    border: 2px solid $dark-accent;
-	}
-	.profile-name {
-	    margin-top: 10px;
-	    color: #fff;
-	    text-transform: uppercase;
-	}
-	.profile-deg {
-	    color: $dark-accent;
-	    font-size: 12px;
-	}
-	.list {
-		margin-bottom: 0;
-	}
-	.item-divider {
-		padding-top: 15px;
-		padding-bottom: 15px;
-	}
+    .profile-bg {
+        display: block;
+        position: relative;
+        width: auto;
+        height: auto;
+        padding: 100px 0;
+        max-height: 100%;
+        background: no-repeat center center;
+        background-color: $dark-primary;
+        background-attachment: scroll;
+        -webkit-background-size: cover;
+        background-size: cover;
+    }
+    .profile-bg-overlay {
+        background-color: rgba(66, 74, 82, .8);
+        z-index: 2;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+    }
+    .profile {
+        z-index: 3;
+        position: absolute;
+        top: 15px;
+        left: 0;
+        width: 100%;
+    }
+    .profile-pic {
+        width: 100px;
+        /*border: 2px solid #eee;*/
+        vertical-align: middle;
+        border: 2px solid $dark-accent;
+    }
+    .profile-name {
+        margin-top: 10px;
+        color: #fff;
+        text-transform: uppercase;
+    }
+    .profile-deg {
+        color: $dark-accent;
+        font-size: 12px;
+    }
+    .list {
+        margin-bottom: 0;
+    }
+    .item-divider {
+        padding-top: 15px;
+        padding-bottom: 15px;
+    }
+}
+
+.has-footer {
+    .item:last-child {
+        margin-bottom: 10px;
+    }
+}
+
+.modal .has-footer .item:last-child {
+    margin-bottom: 0;
 }
 
 .list-page {
-	.item .badge {
-		right: 16px;
-		i {
-			font-size: 24px;
-		}	
-	}
+    .item .badge {
+        right: 16px;
+        i {
+            font-size: 24px;
+        }
+    }
+    .calender {
+        .item {
+            padding: 0px;
+            .item-content {
+                padding: 0px;
+            }
+            h2 {
+                display: inline-block;
+                padding: 0 0 5px 5px;
+            }
+        }
+        .item-calender {
+            padding: 5px 0;
+            width: 50px;
+            background-color: $light-primary;
+            display: inline-block;
+            text-align: center;
+            .day {
+                font-size: 16px;
+                display: block;
+                font-weight: 700;
+            }
+            .month {
+                font-size: 12px;
+            }
+        }
+    }
 }
 
 .detail-page {
-	.item-icon-left {
-	    text-align: right;
-	}
+    .item-icon-left {
+        text-align: right;
+    }
 }
 
 .selected_date_full {
-	color: $primary-text !important;
+    color: $primary-text !important;
 }
 
-.date_selected, .date_col:hover {
-	background-color: $dark-primary !important;
-	color: $secondary-text !important;
+.date_selected,
+.date_col:hover {
+    background-color: $dark-primary !important;
+    color: $secondary-text !important;
 }
 
+.bg-image {
+    display: block;
+    position: relative;
+    width: auto;
+    height: auto;
+    padding: 100px 0;
+    min-height: 100%;
+    background: no-repeat center center;
+    background-color: #2F2637;
+    background-attachment: scroll;
+    -webkit-background-size: cover;
+    background-size: cover;
+    opacity: 0.8;
+}
 
+.bg-image .bg-fade > .ng-enter {
+    opacity: 0;
+    -webkit-transition: opacity 2s ease-in-out;
+}
 
+.bg-image .bg-fade > .ng-enter-active {
+    opacity: 1;
+}
+
+.bg-image .bg-fade > .ng-leave {
+    opacity: 1;
+    -webkit-transition: opacity 2s ease-in-out;
+}
+
+.bg-image .bg-fade > .ng-leave-active {
+    opacity: 0;
+}
+
+.block-logo {
+    img {
+        margin-top: 15%;
+        max-height: 150px;
+        max-width: 150px;
+    }
+}
+
+.img-responsive {
+    display: block;
+    max-width: 100%;
+    height: auto;
+}
+
+.intro-content {
+    position: relative;
+    text-align: center;
+    color: $white-color;
+    .button {
+        text-transform: uppercase;
+    }
+    .intro-welcome {
+        font-size: 1.6em;
+        margin: 6% 0 10%;
+        text-shadow: 0 0 15px rgba(0, 0, 0, .5);
+        color: #F4ECDF;
+        text-transform: uppercase;
+    }
+    .intro-welcome-alt {
+        margin: 8% 0 20%;
+    }
+}

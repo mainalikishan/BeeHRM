@@ -1,0 +1,25 @@
+<ion-view hide-nav-bar="true">
+    <div class="bg-image" style="background-image: url(img/bg-2.png);"></div>
+    <ion-content padding="true">
+        <div class="intro-content">
+            <div class="block-logo">
+                <img src="img/logo.png" class="img-responsive img-centered" alt="">
+            </div>
+            <div class="intro-welcome">Welcome to beeHRM</div>
+            <form ng-submit="doLogin()">
+                <div class="list list-inset" style="margin-bottom:0;">
+                    <label class="item item-input">
+                        <input type="text" placeholder="Username">
+                    </label>
+                    <label class="item item-input">
+                        <input type="password" placeholder="Password">
+                    </label>
+                    <label class="item item-input">
+                        <input type="password" placeholder="Access Key">
+                    </label>
+                </div>
+                <button class="button button-full button-balanced" style="margin-top:0;">Login</button>
+            </form>
+        </div>
+    </ion-content>
+</ion-view>

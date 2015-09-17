@@ -1,7 +1,12 @@
-angular.module('starter.controllers', [])
+angular.module('beehrm.controllers', [])
 
-.controller('AppCtrl', function($scope, $rootScope, $ionicModal, $timeout) {
-
+.controller('AppCtrl', function($scope, $rootScope, $timeout, $state, $ionicSideMenuDelegate, $ionicLoading) {
+    $scope.$on('$ionicView.enter', function() {
+        $ionicSideMenuDelegate.canDragContent(false);
+    });
+    $scope.$on('$ionicView.leave', function() {
+        $ionicSideMenuDelegate.canDragContent(true);
+    });
     // With the new view caching in Ionic, Controllers are only called
     // when they are recreated or on app start, instead of every page change.
     // To listen for when this page is active (for example, to refresh data),
@@ -12,31 +17,28 @@ angular.module('starter.controllers', [])
     // Form data for the login modal
     $scope.loginData = {};
 
-    // Create the login modal that we will use later
-    $ionicModal.fromTemplateUrl('templates/login.html', {
-        scope: $scope
-    }).then(function(modal) {
-        $scope.modal = modal;
-    });
-
-    // Triggered in the login modal to close it
-    $scope.closeLogin = function() {
-        $scope.modal.hide();
-    };
-
-    // Open the login modal
-    $scope.login = function() {
-        $scope.modal.show();
-    };
-
     // Perform the login action when the user submits the login form
     $scope.doLogin = function() {
+        $ionicLoading.show({
+            template: 'Loading...'
+        });
         console.log('Doing login', $scope.loginData);
 
         // Simulate a login delay. Remove this and replace with your login
         // code if using a login system
         $timeout(function() {
-            $scope.closeLogin();
+            $ionicLoading.hide();
+            $state.go('app.dashboard');
+            window.plugins.nativepagetransitions.slide({
+                    "direction": 'right'
+                },
+                function(msg) {
+                    console.log("success: " + msg);
+                },
+                function(msg) {
+                    alert("error: " + msg);
+                }
+            );
         }, 1000);
     };
 
@@ -65,23 +67,88 @@ angular.module('starter.controllers', [])
 .controller('NotificationsCtrl', function($scope, $rootScope) {
 
     $scope.items = [{
-        title: 'Your leave is approved',
+        title: 'Your leave has been approved.',
         id: 1
     }, {
-        title: 'Appraisal submitted by Hari Sadhu',
+        title: 'New poll has been opened.',
         id: 2
     }, {
-        title: 'Dubstep is done',
+        title: 'Your leave has been approved.',
         id: 3
     }, {
-        title: 'Indie happend',
+        title: 'Your salary has been released.',
         id: 4
     }, {
-        title: 'Rap from your friend',
+        title: 'Your salary has been released.',
         id: 5
     }, {
-        title: 'Cowbell is not cowboy',
+        title: 'Your leave has been approved.',
         id: 6
+    }];
+
+})
+
+.controller('EventsCtrl', function($scope) {
+
+    $scope.items = [{
+        title: 'बाबुको मुख हेर्ने दिन - भाद्र २७, आइतवार',
+        day: '13',
+        month: 'Sep',
+        id: 1
+    }, {
+        title: 'दर खाने - भाद्र २९, मङ्गलवार',
+        status: 'P',
+        day: '15',
+        month: 'Sep',
+        id: 2
+    }, {
+        title: 'ऋषिपञ्चमी व्रत - आश्विन १, शुक्रवार',
+        status: 'A',
+        day: '18',
+        month: 'Sep',
+        id: 3
+    }, {
+        title: 'घटस्थापना - आश्विन २६, मङ्गलवार',
+        status: 'A',
+        day: '13',
+        month: 'Oct',
+        id: 4
+    }, {
+        title: 'फूलपाती - कार्तिक ३, मङ्गलवार',
+        status: 'A',
+        day: '20',
+        month: 'Oct',
+        id: 5
+    }, {
+        title: 'कालरात्री - कार्तिक ४, बुधवार',
+        status: 'R',
+        day: '21',
+        month: 'Oct',
+        id: 6
+    }, {
+        title: 'महाअष्टमी - कार्तिक ४, बुधवार',
+        status: 'A',
+        day: '22',
+        month: 'Oct',
+        id: 7
+    }, {
+        title: 'विजया दशमी - कार्तिक ५, बिहिवार',
+        status: 'R',
+        day: '22',
+        month: 'Oct',
+        id: 8
+    }, {
+        title: 'काग तिहार - कार्तिक २३, सोमवार',
+        status: 'A',
+        day: '09',
+        month: 'Nov',
+        id: 9
+    }, {
+        title: 'कुकुर तिहार - कार्तिक २४, मङ्गलवार',
+        status: 'A',
+        day: '10',
+        month: 'Nov',
+        id: 10
     }];
 
 
@@ -98,54 +165,80 @@ angular.module('starter.controllers', [])
     $scope.items = [{
         title: 'Personal Issue',
         status: 'P',
+        day: '22',
+        month: 'Jan',
         id: 1
     }, {
         title: 'Sick Leave',
         status: 'P',
+        day: '15',
+        month: 'Jan',
         id: 2
     }, {
         title: 'Brother\'s Marriage',
         status: 'A',
+        day: '06',
+        month: 'Dec',
         id: 3
     }, {
         title: 'Sick Leave',
         status: 'A',
+        day: '06',
+        month: 'Oct',
         id: 4
     }, {
         title: 'Sick Leave',
         status: 'A',
+        day: '08',
+        month: 'Sep',
         id: 5
     }, {
         title: 'Personal Work',
         status: 'R',
+        day: '14',
+        month: 'Jul',
         id: 6
     }, {
         title: 'Sick Leave',
         status: 'A',
+        day: '11',
+        month: 'Jun',
         id: 7
     }, {
         title: 'Brother\'s Marriage',
         status: 'R',
+        day: '09',
+        month: 'Apr',
         id: 8
     }, {
         title: 'Sick Leave',
         status: 'A',
+        day: '18',
+        month: 'Mar',
         id: 9
     }, {
         title: 'Sick Leave',
-        status: 'R',
-        id: 10
-    }, {
-        title: 'Personal Work',
         status: 'A',
-        id: 11
+        day: '11',
+        month: 'Mar',
+        id: 10
     }];
 
 
 })
 
-.controller('LeaveCtrl', function($scope) {
+.controller('LeaveCtrl', function($scope, $ionicLoading, $timeout) {
+    $scope.show = false;
+    $ionicLoading.show({
+        template: 'Loading...'
+    });
 
+    // Simulate a login delay. Remove this and replace with your login
+    // code if using a login system
+    $timeout(function() {
+        $ionicLoading.hide();
+        $scope.show = true;
+    }, 1000);
 })
 
 .controller('ApplyLeaveCtrl', function($scope, $ionicModal, $timeout) {
@@ -245,5 +338,60 @@ angular.module('starter.controllers', [])
             console.log('Selected date is : ', val);
         }
     };
+})
+
+.controller('PayslipCtrl', function($scope) {
+
+    $scope.items = [{
+        title: 'January',
+        netSalary: '38,405.91',
+        id: 1
+    }, {
+        title: 'February',
+        netSalary: '38,405.91',
+        id: 2
+    }, {
+        title: 'March',
+        netSalary: '27,887.46',
+        id: 3
+    }, {
+        title: 'April',
+        netSalary: '27,887.46',
+        id: 4
+    }, {
+        title: 'May',
+        netSalary: '38,405.91',
+        id: 5
+    }, {
+        title: 'June',
+        netSalary: '38,405.91',
+        id: 6
+    }, {
+        title: 'July',
+        netSalary: '38,405.91',
+        id: 7
+    }, {
+        title: 'August',
+        netSalary: '38,405.00',
+        id: 8
+    }, {
+        title: 'September',
+        netSalary: '48,410.00',
+        id: 9
+    }, {
+        title: 'October',
+        netSalary: '38,405.00',
+        id: 10
+    }, {
+        title: 'November',
+        netSalary: '38,405.00',
+        id: 11
+    }, {
+        title: 'December',
+        netSalary: '38,405.00',
+        id: 12
+    }];
+
+
 })
 ;

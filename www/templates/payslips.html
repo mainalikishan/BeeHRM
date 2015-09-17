@@ -1,0 +1,14 @@
+<ion-view view-title="My Salaries"
+transitiontype="slide" direction="left" go-native>
+    <ion-content class="list-page">
+        <ion-list>
+            <ion-item ng-repeat="item in items" item="item" href="#/app/payslips/{{item.id}}" class="item-remove-animate item-icon-list">
+                <h2><i class="ion-android-calendar"></i> {{ item.title }}</h2>
+                <span class="badge">
+                    NPR. {{ item.netSalary }}
+                </span>
+            </ion-item>
+        </ion-list>
+    </ion-content>
+</ion-view>
+
