@@ -288,6 +288,17 @@ $altbg) {
     }
 }
 
+// footer
+.has-footer {
+    .item:last-child {
+        margin-bottom: 10px;
+    }
+}
+
+.modal .has-footer .item:last-child {
+    margin-bottom: 0;
+}
+
 // dashboard
 .dashboard {
     .profile-bg {
@@ -343,16 +354,7 @@ $altbg) {
     }
 }
 
-.has-footer {
-    .item:last-child {
-        margin-bottom: 10px;
-    }
-}
-
-.modal .has-footer .item:last-child {
-    margin-bottom: 0;
-}
-
+// list page
 .list-page {
     .item .badge {
         right: 16px;
@@ -389,12 +391,14 @@ $altbg) {
     }
 }
 
+// detail page
 .detail-page {
     .item-icon-left {
         text-align: right;
     }
 }
 
+// date plugin
 .selected_date_full {
     color: $primary-text !important;
 }
@@ -405,6 +409,7 @@ $altbg) {
     color: $secondary-text !important;
 }
 
+// login page
 .bg-image {
     display: block;
     position: relative;

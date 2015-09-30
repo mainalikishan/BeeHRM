@@ -6,17 +6,17 @@
                 <img src="img/logo.png" class="img-responsive img-centered" alt="">
             </div>
             <div class="intro-welcome">Welcome to beeHRM</div>
-            <form ng-submit="doLogin()">
+            <form ng-submit="login()">
                 <div class="list list-inset" style="margin-bottom:0;">
                     <label class="item item-input">
-                        <input type="text" placeholder="Username">
+                        <input type="text" ng-model="loginData.email" placeholder="Username">
                     </label>
                     <label class="item item-input">
-                        <input type="password" placeholder="Password">
+                        <input type="password" ng-model="loginData.password" placeholder="Password">
                     </label>
-                    <label class="item item-input">
-                        <input type="password" placeholder="Access Key">
-                    </label>
+                    <!-- <label class="item item-input">
+                        <input type="password" ng-model="loginData.accesskey" placeholder="Access Key">
+                    </label> -->
                 </div>
                 <button class="button button-full button-balanced" style="margin-top:0;">Login</button>
             </form>

@@ -1,49 +1,51 @@
 angular.module('beehrm.controllers', [])
+    .controller('AppCtrl', ['$rootScope', '$scope', '$state', '$timeout', '$localStorage', '$ionicSideMenuDelegate', '$ionicLoading', '$ionicPopup', 'Auth',
+        function($rootScope, $scope, $state, $timeout, $localStorage, $ionicSideMenuDelegate, $ionicLoading, $ionicPopup, Auth) {
+            $scope.$on('$ionicView.enter', function() {
+                $ionicSideMenuDelegate.canDragContent(false);
+            });
+            $scope.$on('$ionicView.leave', function() {
+                $ionicSideMenuDelegate.canDragContent(true);
+            });
 
-.controller('AppCtrl', function($scope, $rootScope, $timeout, $state, $ionicSideMenuDelegate, $ionicLoading) {
-    $scope.$on('$ionicView.enter', function() {
-        $ionicSideMenuDelegate.canDragContent(false);
-    });
-    $scope.$on('$ionicView.leave', function() {
-        $ionicSideMenuDelegate.canDragContent(true);
-    });
-    // With the new view caching in Ionic, Controllers are only called
-    // when they are recreated or on app start, instead of every page change.
-    // To listen for when this page is active (for example, to refresh data),
-    // listen for the $ionicView.enter event:
-    //$scope.$on('$ionicView.enter', function(e) {
-    //});
+            $scope.loginData = {};
 
-    // Form data for the login modal
-    $scope.loginData = {};
+            $scope.login = function() {
+                $ionicLoading.show({
+                    template: 'Loading...'
+                });
 
-    // Perform the login action when the user submits the login form
-    $scope.doLogin = function() {
-        $ionicLoading.show({
-            template: 'Loading...'
-        });
-        console.log('Doing login', $scope.loginData);
+                Auth.login({
+                    email: $scope.loginData.email,
+                    password: $scope.loginData.password
+                }).success(function(res) {
+                    $localStorage.token = res.data.token;
+                    $state.go('app.dashboard');
+                    $ionicLoading.hide();
+                }).error(function(e) {
+                    $timeout(function() {
+                        $ionicLoading.hide();
+                        $ionicPopup.alert({
+                            title: 'Crappola',
+                            template: e.data.error,
+                            buttons: [{
+                                text: 'OK',
+                                type: 'button-primary'
+                            }]
+                        });
+                    }, 1000);
+                });
+            };
 
-        // Simulate a login delay. Remove this and replace with your login
-        // code if using a login system
-        $timeout(function() {
-            $ionicLoading.hide();
-            $state.go('app.dashboard');
-            window.plugins.nativepagetransitions.slide({
-                    "direction": 'right'
-                },
-                function(msg) {
-                    console.log("success: " + msg);
-                },
-                function(msg) {
-                    alert("error: " + msg);
-                }
-            );
-        }, 1000);
-    };
-
-
-})
+            $scope.logout = function() {
+                Auth.logout(function() {
+                    $state.go('app.login');
+                });
+            };
+            $scope.token = $localStorage.token;
+            $scope.tokenClaims = Auth.getTokenClaims();
+        }
+    ])
 
 .controller('DashboardCtrl', function($scope, $rootScope, $timeout, $ionicScrollDelegate) {
 
@@ -53,14 +55,25 @@ angular.module('beehrm.controllers', [])
             var j = i;
             $timeout(function() {
                 $scope.items[j] = {
-                    title: 'Office Runs this Sunday 25-Jan-2015',
-                    dt: '2015-January-25',
+                    title: 'Office shall runs this Sunday',
+                    dt: '2015-January-' + parseInt(j + 1) + '',
                     id: j
                 };
                 $ionicScrollDelegate.resize();
             }, j * 800);
         })();
     }
+
+    // Api.checkIn({
+    //     movie_name: $scope.movie.movieName,
+    //     movie_review: $scope.movie.movieReview,
+    //     movie_rating: $scope.movie.movieRating,
+    //     user_id: results[0].user_id
+    // }).success(function(data) {
+    //     // do something
+    // }).error(function(e) {
+    //     // do something
+    // });
 })
 
 
@@ -150,8 +163,6 @@ angular.module('beehrm.controllers', [])
         month: 'Nov',
         id: 10
     }];
-
-
 })
 
 
@@ -393,5 +404,4 @@ angular.module('beehrm.controllers', [])
     }];
 
 
-})
-;
+});

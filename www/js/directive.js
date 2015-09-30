@@ -1,104 +1,17 @@
 angular.module('beehrm.directives', [])
-// services
-.service('Navigation', function($state, $ionicPlatform) {
-    //directly binding events to this context
-    this.goNative = function(direction, transitiontype) {
-        $ionicPlatform.ready(function() {
-            switch (transitiontype) {
-                case "slide":
-                    window.plugins.nativepagetransitions.slide({
-                            "direction": direction
-                        },
-                        function(msg) {
-                            console.log("success: " + msg);
-                        },
-                        function(msg) {
-                            alert("error: " + msg);
-                        }
-                    );
-                    break;
-                case "flip":
-                    window.plugins.nativepagetransitions.flip({
-                            "direction": direction
-                        },
-                        function(msg) {
-                            console.log("success: " + msg);
-                        },
-                        function(msg) {
-                            alert("error: " + msg);
-                        }
-                    );
-                    break;
-
-                case "fade":
-                    window.plugins.nativepagetransitions.fade({
-
-                        },
-                        function(msg) {
-                            console.log("success: " + msg);
-                        },
-                        function(msg) {
-                            alert("error: " + msg);
-                        }
-                    );
-                    break;
-
-                case "drawer":
-                    window.plugins.nativepagetransitions.drawer({
-                            "origin": direction,
-                            "action": "open"
-                        },
-                        function(msg) {
-                            console.log("success: " + msg);
-                        },
-                        function(msg) {
-                            alert("error: " + msg);
-                        }
-                    );
-                    break;
-
-                case "curl":
-                    window.plugins.nativepagetransitions.curl({
-                            "direction": direction
-                        },
-                        function(msg) {
-                            console.log("success: " + msg);
-                        },
-                        function(msg) {
-                            alert("error: " + msg);
-                        }
-                    );
-                    break;
-
-                default:
-                    window.plugins.nativepagetransitions.slide({
-                            "direction": direction
-                        },
-                        function(msg) {
-                            console.log("success: " + msg);
-                        },
-                        function(msg) {
-                            alert("error: " + msg);
-                        }
-                    );
+    
+    .directive('goNative', function(Navigation) {
+        return {
+            restrict: 'A',
+            link: function($scope, $el, attrs) {
+                var direction = attrs.direction;
+                var transitiontype = attrs.transitiontype;
+                $scope.$on("$stateChangeStart", function() {
+                    Navigation.goNative(direction, transitiontype);
+                });
             }
-        });
-    };
-})
-
-// directives
-.directive('goNative', function(Navigation) {
-    return {
-        restrict: 'A',
-        link: function($scope, $el, attrs) {
-            var direction = attrs.direction;
-            var transitiontype = attrs.transitiontype;
-            $scope.$on("$stateChangeStart", function() {
-                Navigation.goNative(direction, transitiontype);
-            });
-        }
-    };
-})
+        };
+    })
 
 .directive('showFooter', function($rootScope) {
     return {
@@ -162,5 +75,4 @@ angular.module('beehrm.directives', [])
             }
         }
     };
-})
-;
+});
