@@ -27,7 +27,7 @@ angular.module('beehrm.controllers', [])
                         $ionicLoading.hide();
                         $ionicPopup.alert({
                             title: 'Crappola',
-                            template: e.data.error,
+                            template: e.message,
                             buttons: [{
                                 text: 'OK',
                                 type: 'button-primary'

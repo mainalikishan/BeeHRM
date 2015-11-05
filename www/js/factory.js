@@ -37,7 +37,7 @@ angular.module('beehrm.factories', [])
                     dataType: 'json',
                     data: input,
                     headers: {
-                         "Content-Type": "application/json"
+                         "Content-Type": "application/x.vdn.v1+json"
                     }
                 });
             },

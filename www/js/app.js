@@ -1,6 +1,6 @@
 angular.module('beehrm', ['ionic', 'ngStorage', 'ngFx', 'ngAnimate', 'ionic-datepicker', 'beehrm.directives', 'beehrm.services', 'beehrm.factories', 'beehrm.controllers'])
     .constant('urls', {
-        BASE_API: 'http://192.168.10.8:8000'
+        BASE_API: 'http://192.168.10.23:8000/api'
     })
 
 .run(function($ionicPlatform) {
