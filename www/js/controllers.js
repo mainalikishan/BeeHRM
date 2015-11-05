@@ -19,7 +19,7 @@ angular.module('beehrm.controllers', [])
                     email: $scope.loginData.email,
                     password: $scope.loginData.password
                 }).success(function(res) {
-                    $localStorage.token = res.data.token;
+                    $localStorage.token = res.token;
                     $state.go('app.dashboard');
                     $ionicLoading.hide();
                 }).error(function(e) {
