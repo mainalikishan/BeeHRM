@@ -11,12 +11,12 @@ show-footer show-tabs hide-back-button="true">
                 <div class="profile-bg-overlay"></div>
                 <div class="profile">
                     <div class="text-center" style="margin: 0 auto;">
-                        <img src="img/profile.jpg" class="img-circle img-centered profile-pic" alt="">
+                        <img src="{{ userInfo.image }}" class="img-circle img-centered profile-pic" alt="">
                         <div class="profile-name">
-                            Keshav Oli
+                            {{ userInfo.name }}
                         </div>
                         <div class="profile-deg">
-                            Jr. Customer Support
+                            {{ userInfo.designation }}
                         </div>
                     </div>
                 </div>

@@ -1,12 +1,42 @@
 angular.module('beehrm.controllers', [])
-    .controller('AppCtrl', ['$rootScope', '$scope', '$state', '$timeout', '$localStorage', '$ionicSideMenuDelegate', '$ionicLoading', '$ionicPopup', 'Auth',
-        function($rootScope, $scope, $state, $timeout, $localStorage, $ionicSideMenuDelegate, $ionicLoading, $ionicPopup, Auth) {
+    .controller('AppCtrl', ['$rootScope', '$scope', '$state', '$timeout', '$localStorage', '$ionicSideMenuDelegate', '$ionicLoading', '$ionicPopup', 'Auth', 'Me',
+        function($rootScope, $scope, $state, $timeout, $localStorage, $ionicSideMenuDelegate, $ionicLoading, $ionicPopup, Auth, Me) {
             $scope.$on('$ionicView.enter', function() {
                 $ionicSideMenuDelegate.canDragContent(false);
             });
             $scope.$on('$ionicView.leave', function() {
                 $ionicSideMenuDelegate.canDragContent(true);
             });
+
+            function getUserBasicInfo(token) {
+                if (typeof token !== 'undefined') {
+                    Me.include({
+                        0: 'applications',
+                        1: 'payslip',
+                    }).success(function(res) {
+                        // Save To LocalStorage
+                        $localStorage.notifications = res.data.notifications;
+                        delete res.data.notifications;
+                        $localStorage.userInfo = res.data;
+
+                        $state.go('app.dashboard');
+
+                        $ionicLoading.hide();
+                    }).error(function(e) {
+                        $timeout(function() {
+                            $ionicLoading.hide();
+                            $ionicPopup.alert({
+                                title: 'Crappola',
+                                template: e.message,
+                                buttons: [{
+                                    text: 'OK',
+                                    type: 'button-primary'
+                                }]
+                            });
+                        }, 1000);
+                    });
+                };
+            }
 
             $scope.loginData = {};
 
@@ -20,8 +50,7 @@ angular.module('beehrm.controllers', [])
                     password: $scope.loginData.password
                 }).success(function(res) {
                     $localStorage.token = res.token;
-                    $state.go('app.dashboard');
-                    $ionicLoading.hide();
+                    getUserBasicInfo($localStorage.token);
                 }).error(function(e) {
                     $timeout(function() {
                         $ionicLoading.hide();
@@ -42,12 +71,15 @@ angular.module('beehrm.controllers', [])
                     $state.go('app.login');
                 });
             };
-            $scope.token = $localStorage.token;
-            $scope.tokenClaims = Auth.getTokenClaims();
         }
     ])
 
-.controller('DashboardCtrl', function($scope, $rootScope, $timeout, $ionicScrollDelegate) {
+.controller('DashboardCtrl', function($scope, $rootScope, $timeout, $ionicScrollDelegate, $ionicLoading, $ionicPopup, $localStorage, Me) {
+
+    var token = $localStorage.token;
+    if (typeof token !== 'undefined') {
+        $scope.userInfo = $localStorage.userInfo;
+    }
 
     $scope.items = [];
     for (var i = 0; i < 10; i++) {

@@ -1,34 +1,5 @@
 angular.module('beehrm.factories', [])
     .factory('Auth', ['$http', '$localStorage', 'urls', function($http, $localStorage, urls) {
-        function urlBase64Decode(str) {
-            var output = str.replace('-', '+').replace('_', '/');
-            switch (output.length % 4) {
-                case 0:
-                    break;
-                case 2:
-                    output += '==';
-                    break;
-                case 3:
-                    output += '=';
-                    break;
-                default:
-                    throw 'Illegal base64url string!';
-            }
-            return window.atob(output);
-        }
-
-        function getClaimsFromToken() {
-            var token = $localStorage.token;
-            var user = {};
-            if (typeof token !== 'undefined') {
-                var encoded = token.split('.')[1];
-                user = JSON.parse(urlBase64Decode(encoded));
-            }
-            return user;
-        }
-
-        var tokenClaims = getClaimsFromToken();
-
         return {
             login: function(input) {
                 return $http({
@@ -37,17 +8,47 @@ angular.module('beehrm.factories', [])
                     dataType: 'json',
                     data: input,
                     headers: {
-                         "Content-Type": "application/x.vdn.v1+json"
+                        "Content-Type": "application/x.vdn.v1+json"
                     }
                 });
             },
             logout: function(success) {
-                tokenClaims = {};
                 delete $localStorage.token;
+                delete $localStorage.userInfo;
+                delete $localStorage.notifications;
                 success();
-            },
-            getTokenClaims: function() {
-                return tokenClaims;
             }
         };
-    }]);
+    }])
+
+.factory('Me', ['$http', '$localStorage', 'urls', function($http, $localStorage, urls) {
+    return {
+        basic: function(input) {
+            return $http({
+                url: urls.BASE_API + '/me',
+                method: 'GET',
+                dataType: 'json',
+                headers: {
+                    "Content-Type": "application/x.vdn.v1+json",
+                    "Authorization": "bearer " + $localStorage.token
+                }
+            });
+        },
+        include: function(input) {
+            var include = '';
+            angular.forEach(input, function(value, key){
+                include += value + ",";
+            });
+            include = include.substring(0,(include.length-1));
+            return $http({
+                url: urls.BASE_API + '/me?include='+include,
+                method: 'GET',
+                dataType: 'json',
+                headers: {
+                    "Content-Type": "application/x.vdn.v1+json",
+                    "Authorization": "bearer " + $localStorage.token
+                }
+            });
+        }
+    };
+}]);
