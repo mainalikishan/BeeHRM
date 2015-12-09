@@ -1,38 +1,32 @@
-<ion-view view-title="Details"
-transitiontype="slide" direction="right" go-native ng-show="show">
-    <ion-content class="detail-page">
-        <div class="list">
-            <div class="item item-divider">
-                Personal Leave
-            </div>
-            <div class="item">
-                Type <span class="badge badge-accent">Unpaid</span>
-            </div>
-            <div class="item">
-                Start <span class="badge badge-accent">2015-07-13</span>
-            </div>
-            <div class="item">
-                End <span class="badge badge-accent">2015-07-13</span>
-            </div>
-            <div class="item item-text-wrap">
-                I respectfully request leave to go to my friends marriage which is out of town. It is to be held on 25th Feb. I will need 4 days(24th - 27th Feb) to travel to the wedding and return. Thank You.
-            </div>
-            <div class="item item-icon-left balanced">
-                <i class="icon ion-ios-checkmark"></i> Approved
-            </div>
-
-            <!-- <div class="item item-icon-left assertive">
-                <i class="icon ion-ios-close"></i> Rejected
-            </div> -->
-
-            <!-- <div class="item item-icon-left energized">
-                <i class="icon ion-ios-minus"></i> Pending
-            </div> -->
-            <div class="item item-avatar item-text-wrap">
-                <img src="img/profile-2.jpg">
-                <h2>Abhijit Gupta</h2>
-                <p>I understand. Have fun but before that please wrap up Appraisal completely and Disciplinary Issues.</p>
-            </div>
-        </div>
-    </ion-content>
+<ion-view view-title="Details" transitiontype="slide" direction="right" go-native ng-show="show">
+  <ion-content class="detail-page">
+    <div class="list">
+      <div class="item item-divider">
+        {{ leaveDetails.subject }}
+      </div>
+      <div class="item">
+        Type
+        <span class="badge badge-accent">{{ leaveDetails.leave_type }}</span>
+      </div>
+      <div class="item">
+        Start
+        <span class="badge badge-accent">{{ leaveDetails.start_date }}</span>
+      </div>
+      <div class="item">
+        End
+        <span class="badge badge-accent">{{ leaveDetails.end_date }}</span>
+      </div>
+      <div class="item item-text-wrap">
+        {{ leaveDetails.description }}
+      </div>
+      <div class="item item-icon-left status" ng-class="{'balanced': leaveDetails.status == 'approved', 'assertive': leaveDetails.status == 'rejected', 'energized': leaveDetails.status == 'pending'}">
+        <i class="icon" ng-class="{'ion-ios-checkmark balanced': leaveDetails.status == 'approved', 'ion-ios-close assertive': leaveDetails.status == 'rejected', 'ion-ios-minus energized': leaveDetails.status == 'pending'}"></i> {{ leaveDetails.status }}
+      </div>
+      <div class="item item-avatar item-text-wrap" style="border-bottom:0;">
+        <img src="{{ leaveDetails.approver_photo }}">
+        <h2>{{ leaveDetails.approver }}</h2>
+        <p>{{ (!leaveDetails.approver_message) ? 'No Comment' : leaveDetails.approver_message  }}</p>
+      </div>
+    </div>
+  </ion-content>
 </ion-view>

@@ -55,7 +55,10 @@ gulp.task('git-check', function(done) {
 // beeHRM
 gulp.task('jsplugins', function(){
     return gulp.src(
-      ['www/lib/ngFx/dist/ngFx.min.js', 'www/lib/ionic-datepicker/dist/ionic-datepicker.bundle.min.js'])
+      ['www/lib/ngFx/dist/ngFx.min.js',
+      'www/lib/ionic-datepicker/dist/ionic-datepicker.bundle.min.js',
+      'www/lib/ngCordova/dist/ng-cordova.min.js',
+      'www/lib/ngstorage/ngStorage.min.js'])
       .pipe(concat('plugins.min.js'))
       .pipe(gulp.dest('www/lib/beehrm'))
 });

@@ -1,45 +1,49 @@
 <ion-side-menus enable-menu-with-back-views="false">
-    <ion-side-menu-content>
-        <ion-nav-bar class="bar-primary">
-            <ion-nav-back-button>
-            </ion-nav-back-button>
-            <ion-nav-buttons side="left">
-                <button class="button button-icon button-clear ion-navicon" menu-toggle="left">
-                </button>
-            </ion-nav-buttons>
-        </ion-nav-bar>
-        <ion-nav-view name="menuContent">
-            <!-- dashbaord -->
-            <ng-include src="'templates/dashboard.footer.html'"></ng-include>
-            <!-- leaves -->
-            <ng-include src="'templates/leaves.footer.html'"></ng-include>
-        </ion-nav-view>
-    </ion-side-menu-content>
-    <ion-side-menu side="left">
-        <ion-header-bar class="bar-primary">
-            <div class="side-intro">
-                <div class="media-profile">
-                    <img src="./img/profile.jpg" class="img-circle">
-                </div>
-                <div class="welcome-msg">Hi, Keshav</div>
-            </div>
-        </ion-header-bar>
-        <ion-content>
-            <ion-list>
-                <ion-item menu-close href="#/app/dashboard">
-                    <i class="icon ion-ios-briefcase-outline"></i> <span class="menu-label">Dashboard</span>
-                </ion-item>
-                <ion-item menu-close href="#/app/leaves">
-                    <i class="icon ion-ios-calendar-outline"></i> <span class="menu-label">Leave</span>
-                    <span class="badge badge-accent">1</span>
-                </ion-item>
-                <ion-item menu-close href="#/app/payslips">
-                    <i class="icon ion-ios-list-outline"></i> <span class="menu-label">Payslip</span>
-                </ion-item>
-                <ion-item menu-close href="#/app/playlists" ng-click="logout()">
-                    <i class="icon ion-log-out"></i> <span class="menu-label">LogOut</span>
-                </ion-item>
-            </ion-list>
-        </ion-content>
-    </ion-side-menu>
+  <ion-side-menu-content>
+    <ion-nav-bar class="bar-primary">
+      <ion-nav-back-button>
+      </ion-nav-back-button>
+      <ion-nav-buttons side="left">
+        <button class="button button-icon button-clear ion-navicon" menu-toggle="left">
+        </button>
+      </ion-nav-buttons>
+    </ion-nav-bar>
+    <ion-nav-view name="menuContent">
+      <!-- dashbaord -->
+      <ng-include src="'templates/dashboard.footer.html'"></ng-include>
+      <!-- leaves -->
+      <ng-include src="'templates/leaves.footer.html'"></ng-include>
+    </ion-nav-view>
+  </ion-side-menu-content>
+  <ion-side-menu side="left">
+    <ion-header-bar class="bar-primary">
+      <div class="side-intro">
+        <div class="media-profile">
+          <img src="{{ userInfo.image }}" class="img-circle">
+        </div>
+        <div class="welcome-msg">Hi, {{ userInfo.name.split(" ")[0] }}</div>
+      </div>
+    </ion-header-bar>
+    <ion-content>
+      <ion-list>
+        <ion-item menu-close href="#/app/dashboard">
+          <i class="icon ion-ios-briefcase-outline"></i>
+          <span class="menu-label">Dashboard</span>
+        </ion-item>
+        <ion-item menu-close href="#/app/leaves">
+          <i class="icon ion-ios-calendar-outline"></i>
+          <span class="menu-label">Leave</span>
+          <span class="badge badge-accent">1</span>
+        </ion-item>
+        <ion-item menu-close href="#/app/payslips">
+          <i class="icon ion-ios-list-outline"></i>
+          <span class="menu-label">Payslip</span>
+        </ion-item>
+        <ion-item menu-close href="#/app/playlists" ng-click="logout()">
+          <i class="icon ion-log-out"></i>
+          <span class="menu-label">LogOut</span>
+        </ion-item>
+      </ion-list>
+    </ion-content>
+  </ion-side-menu>
 </ion-side-menus>
