@@ -103,12 +103,22 @@ angular.module('beehrm', ['ionic', 'ngCordova', 'ngStorage', 'ngFx', 'ngAnimate'
     }
   })
 
+  .state('app.bulletinBoard', {
+    url: '/bulletinBoards/:bulletinId',
+    views: {
+      'menuContent': {
+        templateUrl: 'templates/bulletin.html',
+        controller: 'BulletinBoardCtrl'
+      }
+    }
+  })
+
   .state('app.payslips', {
     url: '/payslips',
     views: {
       'menuContent': {
         templateUrl: 'templates/payslips.html',
-        controller: 'PayslipCtrl'
+        controller: 'PayslipsCtrl'
       }
     }
   })
@@ -118,7 +128,7 @@ angular.module('beehrm', ['ionic', 'ngCordova', 'ngStorage', 'ngFx', 'ngAnimate'
     views: {
       'menuContent': {
         templateUrl: 'templates/payslip.html',
-        controller: 'LeaveCtrl'
+        controller: 'PayslipCtrl'
       }
     }
   })

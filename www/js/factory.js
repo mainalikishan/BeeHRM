@@ -67,7 +67,17 @@ angular.module('beehrm.factories', [])
         }
       });
     },
-
+    bulletinBoard: function(input) {
+      return $http({
+        url: urls.BASE_API + '/bulletin-board',
+        method: 'GET',
+        dataType: 'json',
+        headers: {
+          "Content-Type": "application/x.vdn.v1+json",
+          "Authorization": "bearer " + $localStorage.token
+        }
+      });
+    }
   };
 }])
 

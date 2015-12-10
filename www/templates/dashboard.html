@@ -23,9 +23,9 @@
         <div class="item item-divider">
           <i class="ion-speakerphone"></i> Bulletin Board
         </div>
-        <ion-item ng-repeat="item in items" item="item" href="#/item/{{item.id}}" class="fx-fade-left fx-speed-2000">
+        <ion-item collection-repeat="item in bulletinBoard" item="item" href="#/app/bulletinBoards/{{item.id}}" class="fx-fade-left fx-speed-2000">
           <h2>{{ item.title }}</h2>
-          <p><i class="ion-ios-clock-outline"></i> {{ item.dt }}</p>
+          <!-- <p><i class="ion-ios-clock-outline"></i> {{ item.from }} - {{ item.to }}</p> -->
         </ion-item>
 
       </ion-list>

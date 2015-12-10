@@ -324,10 +324,18 @@ h6,
 
 // list page
 .list-page {
-  .item .badge {
-    right: 16px;
-    i {
-      font-size: 24px;
+  .item {
+    .badge {
+      top: 10px;
+      right: 16px;
+      i {
+        font-size: 24px;
+      }
+    }
+    .has-footer {
+      .item:last-child {
+        margin-bottom: 20px;
+      }
     }
   }
   .calender {
@@ -446,11 +454,13 @@ h6,
 }
 
 // ionic spinner
-.spinner svg {
-  padding:0;
-  margin: 0;
-  width: 28px;
-  height: 28px;
-  stroke: $dark-accent;
-  fill: $dark-accent;
+.spinner {
+  svg {
+    padding:0;
+    margin: -10px 0 0;
+    width: 28px;
+    height: 28px;
+    stroke: $dark-accent;
+    fill: $dark-accent;
+  }
 }
