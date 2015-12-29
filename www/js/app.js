@@ -1,6 +1,6 @@
 angular.module('beehrm', ['ionic', 'ngCordova', 'ngStorage', 'ngFx', 'ngAnimate', 'ionic-datepicker', 'beehrm.directives', 'beehrm.services', 'beehrm.factories', 'beehrm.controllers'])
   .constant('urls', {
-    BASE_API: 'http://192.168.10.9:8000'
+    BASE_API: 'http://youngminds.com.np/beehrm_mobile/'
   })
 
 .run(function($ionicPlatform) {
@@ -44,11 +44,21 @@ angular.module('beehrm', ['ionic', 'ngCordova', 'ngStorage', 'ngFx', 'ngAnimate'
     controller: 'AppCtrl'
   })
 
+  .state('app.access', {
+    url: '/access',
+    views: {
+      'menuContent': {
+        templateUrl: 'templates/access.html'
+      }
+    }
+  })
+
   .state('app.login', {
     url: '/login',
     views: {
       'menuContent': {
-        templateUrl: 'templates/login.html'
+        templateUrl: 'templates/login.html',
+        controller: 'LoginCtrl'
       }
     }
   })
@@ -87,8 +97,7 @@ angular.module('beehrm', ['ionic', 'ngCordova', 'ngStorage', 'ngFx', 'ngAnimate'
     url: '/leaves-balance',
     views: {
       'menuContent': {
-        templateUrl: 'templates/leaves.balance.html',
-        controller: 'LeavesCtrl'
+        templateUrl: 'templates/leaves.balance.html'
       }
     }
   })
@@ -143,7 +152,7 @@ angular.module('beehrm', ['ionic', 'ngCordova', 'ngStorage', 'ngFx', 'ngAnimate'
     }
   });
   // if none of the above states are matched, use this as the fallback
-  $urlRouterProvider.otherwise('/app/login');
+  $urlRouterProvider.otherwise('/app/access');
   $ionicConfigProvider.tabs.position("bottom");
   $ionicConfigProvider.navBar.alignTitle('center');
   $ionicConfigProvider.views.transition('platform');
@@ -160,8 +169,10 @@ angular.module('beehrm', ['ionic', 'ngCordova', 'ngStorage', 'ngFx', 'ngAnimate'
         return config;
       },
       'responseError': function(response) {
-        if (response.status === 401 || response.status === 403) {
+        if (response.status === 401) {
           $location.path('/app/login');
+        } else if (response.status === 403) {
+          $location.path('/app/access');
         }
         return $q.reject(response);
       }

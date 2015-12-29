@@ -1,9 +1,21 @@
 angular.module('beehrm.factories', [])
   .factory('Auth', ['$http', '$localStorage', 'urls', function($http, $localStorage, urls) {
     return {
-      login: function(input) {
+      access: function(input) {
         return $http({
-          url: urls.BASE_API + '/login',
+          url: urls.BASE_API,
+          method: 'POST',
+          dataType: 'json',
+          data: input,
+          headers: {
+            "Content-Type": "application/json"
+          }
+        });
+      },
+      login: function(input) {
+        var apiUrl = $localStorage.accessData.org_app_url;
+        return $http({
+          url: apiUrl + '/login',
           method: 'POST',
           dataType: 'json',
           data: input,
@@ -13,9 +25,12 @@ angular.module('beehrm.factories', [])
         });
       },
       logout: function(success) {
+        delete $localStorage.accessData;
         delete $localStorage.token;
         delete $localStorage.userInfo;
         delete $localStorage.notifications;
+        delete $localStorage.payslip;
+        delete $localStorage.bulletinBoard;
         success();
       }
     };
@@ -24,8 +39,9 @@ angular.module('beehrm.factories', [])
 .factory('Me', ['$http', '$localStorage', 'urls', function($http, $localStorage, urls) {
   return {
     basic: function(input) {
+      var apiUrl = $localStorage.accessData.org_app_url;
       return $http({
-        url: urls.BASE_API + '/me',
+        url: apiUrl + '/me',
         method: 'GET',
         dataType: 'json',
         headers: {
@@ -35,13 +51,14 @@ angular.module('beehrm.factories', [])
       });
     },
     include: function(input) {
+      var apiUrl = $localStorage.accessData.org_app_url;
       var include = '';
       angular.forEach(input, function(value, key) {
         include += value + ",";
       });
       include = include.substring(0, (include.length - 1));
       return $http({
-        url: urls.BASE_API + '/me?include=' + include,
+        url: apiUrl + '/me?include=' + include,
         method: 'GET',
         dataType: 'json',
         headers: {
@@ -56,9 +73,10 @@ angular.module('beehrm.factories', [])
 .factory('All', ['$http', '$localStorage', 'urls', function($http, $localStorage, urls) {
   return {
     leaveApplication: function(input) {
+      var apiUrl = $localStorage.accessData.org_app_url;
       var include = input[0];
       return $http({
-        url: urls.BASE_API + '/leave-application/?'+include,
+        url: apiUrl + '/leave-application/?'+include,
         method: 'GET',
         dataType: 'json',
         headers: {
@@ -68,8 +86,9 @@ angular.module('beehrm.factories', [])
       });
     },
     bulletinBoard: function(input) {
+      var apiUrl = $localStorage.accessData.org_app_url;
       return $http({
-        url: urls.BASE_API + '/bulletin-board',
+        url: apiUrl + '/bulletin-board',
         method: 'GET',
         dataType: 'json',
         headers: {
