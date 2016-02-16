@@ -23,7 +23,7 @@ angular.module('beehrm.controllers', [])
       });
 
       if (typeof $localStorage.token !== 'undefined') {
-        $scope.userInfo = $localStorage.userInfo;
+        $rootScope.userInfo = $localStorage.userInfo;
         $state.go('app.dashboard', {}, {
           reload: true
         });
