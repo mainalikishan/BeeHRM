@@ -3,11 +3,9 @@ angular.module('beehrm', ['ionic', 'ngCordova', 'ngStorage', 'ngFx', 'ngAnimate'
     BASE_API: 'http://youngminds.com.np/beehrm_mobile/'
   })
 
-.run(function($ionicPlatform) {
+.run(['$ionicPlatform', function($ionicPlatform) {
 
   $ionicPlatform.ready(function() {
-
-    StatusBar.backgroundColorByHexString("#3D4B55");
     // then override any default you want
     if (window.plugins) {
       window.plugins.nativepagetransitions.globalOptions.duration = 400;
@@ -28,13 +26,12 @@ angular.module('beehrm', ['ionic', 'ngCordova', 'ngStorage', 'ngFx', 'ngAnimate'
 
     }
     if (window.StatusBar) {
-      // org.apache.cordova.statusbar required
-      StatusBar.styleDefault();
+      StatusBar.backgroundColorByHexString("#445963");
     }
   });
-})
+}])
 
-.config(function($stateProvider, $urlRouterProvider, $ionicConfigProvider, $httpProvider) {
+.config(['$stateProvider', '$urlRouterProvider', '$ionicConfigProvider', '$httpProvider', function($stateProvider, $urlRouterProvider, $ionicConfigProvider, $httpProvider) {
   $stateProvider
 
     .state('app', {
@@ -178,4 +175,4 @@ angular.module('beehrm', ['ionic', 'ngCordova', 'ngStorage', 'ngFx', 'ngAnimate'
       }
     };
   }]);
-});
+}]);

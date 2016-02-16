@@ -1,6 +1,6 @@
 angular.module('beehrm.directives', [])
 
-.directive('goNative', function(Navigation) {
+.directive('goNative', ['Navigation', function(Navigation) {
   return {
     restrict: 'A',
     link: function($scope, $el, attrs) {
@@ -11,9 +11,9 @@ angular.module('beehrm.directives', [])
       });
     }
   };
-})
+}])
 
-.directive('showFooter', function($rootScope) {
+.directive('showFooter', ['$rootScope', function($rootScope) {
   return {
     restrict: 'A',
     link: function($scope, $el) {
@@ -27,9 +27,9 @@ angular.module('beehrm.directives', [])
       }
     }
   };
-})
+}])
 
-.directive('showTabs', function($rootScope) {
+.directive('showTabs', ['$rootScope', function($rootScope) {
   return {
     restrict: 'A',
     link: function($scope, $el) {
@@ -43,9 +43,9 @@ angular.module('beehrm.directives', [])
       }
     }
   };
-})
+}])
 
-.directive('showLeaveFooter', function($rootScope) {
+.directive('showLeaveFooter', ['$rootScope', function($rootScope) {
   return {
     restrict: 'A',
     link: function($scope, $el) {
@@ -59,9 +59,9 @@ angular.module('beehrm.directives', [])
       }
     }
   };
-})
+}])
 
-.directive('showLeaveTabs', function($rootScope) {
+.directive('showLeaveTabs', ['$rootScope', function($rootScope) {
   return {
     restrict: 'A',
     link: function($scope, $el) {
@@ -75,4 +75,4 @@ angular.module('beehrm.directives', [])
       }
     }
   };
-});
+}]);

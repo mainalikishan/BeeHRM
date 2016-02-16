@@ -1,5 +1,5 @@
 angular.module('beehrm.services', [])
-  .service('Navigation', function($state, $ionicPlatform) {
+  .service('Navigation', ['$state', '$ionicPlatform', function($state, $ionicPlatform) {
     //directly binding events to this context
     this.goNative = function(direction, transitiontype) {
       $ionicPlatform.ready(function() {
@@ -12,7 +12,7 @@ angular.module('beehrm.services', [])
                 console.log("success: " + msg);
               },
               function(msg) {
-                alert("error: " + msg);
+                // alert("error: " + msg);
               }
             );
             break;
@@ -24,7 +24,7 @@ angular.module('beehrm.services', [])
                 console.log("success: " + msg);
               },
               function(msg) {
-                alert("error: " + msg);
+                // alert("error: " + msg);
               }
             );
             break;
@@ -37,7 +37,7 @@ angular.module('beehrm.services', [])
                 console.log("success: " + msg);
               },
               function(msg) {
-                alert("error: " + msg);
+                // alert("error: " + msg);
               }
             );
             break;
@@ -51,7 +51,7 @@ angular.module('beehrm.services', [])
                 console.log("success: " + msg);
               },
               function(msg) {
-                alert("error: " + msg);
+                // alert("error: " + msg);
               }
             );
             break;
@@ -64,7 +64,7 @@ angular.module('beehrm.services', [])
                 console.log("success: " + msg);
               },
               function(msg) {
-                alert("error: " + msg);
+                // alert("error: " + msg);
               }
             );
             break;
@@ -77,10 +77,10 @@ angular.module('beehrm.services', [])
                 console.log("success: " + msg);
               },
               function(msg) {
-                alert("error: " + msg);
+                // alert("error: " + msg);
               }
             );
         }
       });
     };
-  });
+  }]);

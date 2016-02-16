@@ -25,7 +25,6 @@ angular.module('beehrm.factories', [])
         });
       },
       logout: function(success) {
-        delete $localStorage.accessData;
         delete $localStorage.token;
         delete $localStorage.userInfo;
         delete $localStorage.notifications;
@@ -56,7 +55,8 @@ angular.module('beehrm.factories', [])
       angular.forEach(input, function(value, key) {
         include += value + ",";
       });
-      include = include.substring(0, (include.length - 1));
+      included = include.substring(0, (include.length - 1));
+      include = (typeof included == 'undefined') ? '' : included;
       return $http({
         url: apiUrl + '/me?include=' + include,
         method: 'GET',
@@ -74,7 +74,7 @@ angular.module('beehrm.factories', [])
   return {
     leaveApplication: function(input) {
       var apiUrl = $localStorage.accessData.org_app_url;
-      var include = input[0];
+      var include = (typeof input[0] == 'undefined') ? '' : input[0];
       return $http({
         url: apiUrl + '/leave-application/?'+include,
         method: 'GET',

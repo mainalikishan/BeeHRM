@@ -6,13 +6,14 @@ var sass = require('gulp-sass');
 var minifyCss = require('gulp-minify-css');
 var rename = require('gulp-rename');
 var sh = require('shelljs');
+var uglify = require('gulp-uglifyjs');
 
 
 var paths = {
   sass: ['./scss/**/*.scss']
 };
 
-gulp.task('default', ['sass','jsplugins']);
+gulp.task('default', ['sass','jsplugins', 'jsApp']);
 
 gulp.task('sass', function(done) {
   gulp.src('./scss/beehrm.app.scss')
@@ -61,4 +62,33 @@ gulp.task('jsplugins', function(){
       'www/lib/ngstorage/ngStorage.min.js'])
       .pipe(concat('plugins.min.js'))
       .pipe(gulp.dest('www/lib/beehrm'))
+});
+
+
+gulp.task('jsApp', function() {
+  return gulp.src(
+      ['www/js/app.js',
+        'www/js/services.js',
+        'www/js/factory.js',
+        'www/js/directive.js',
+        'www/js/controllers.js'
+      ])
+      .pipe(uglify('beehrm.min.js', {
+        mangle: true,
+        output: {
+          beautify: false
+        }
+      }))
+    .pipe(gulp.dest('www/js'))
+});
+
+gulp.task('jsAll', function() {
+  return gulp.src(
+      ['www/lib/ionic/js/ionic.bundle.min.js',
+        'www/lib/gsap/src/minified/TweenMax.min.js',
+        'www/lib/beehrm/plugins.min.js',
+        'www/js/beehrm.min.js'
+      ])
+    .pipe(concat('beehrm.min.js'))
+    .pipe(gulp.dest('www/lib/beehrm'))
 });

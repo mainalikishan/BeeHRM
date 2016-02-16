@@ -1,6 +1,6 @@
 angular.module('beehrm.controllers', [])
-  .controller('AppCtrl', ['$scope', '$state', '$timeout', '$localStorage', '$ionicSideMenuDelegate', '$ionicLoading', '$cordovaDialogs', 'Auth', 'Me', 'All',
-    function($scope, $state, $timeout, $localStorage, $ionicSideMenuDelegate, $ionicLoading, $cordovaDialogs, Auth, Me, All) {
+  .controller('AppCtrl', ['$scope', '$rootScope', '$state', '$timeout', '$localStorage', '$ionicSideMenuDelegate', '$ionicLoading', '$ionicHistory', '$cordovaDialogs', '$cordovaNetwork', 'Auth',
+    function($scope, $rootScope, $state, $timeout, $localStorage, $ionicSideMenuDelegate, $ionicLoading, $ionicHistory, $cordovaDialogs, $cordovaNetwork, Auth) {
       $ionicLoading.show({
         template: 'Loading...'
       });
@@ -12,126 +12,56 @@ angular.module('beehrm.controllers', [])
         $ionicSideMenuDelegate.canDragContent(true);
       });
 
+      $scope.isOnline = $cordovaNetwork.isOnline();
+
+      $rootScope.$on('$cordovaNetwork:online', function(event, networkState) {
+        $scope.isOnline = true;
+      });
+
+      $rootScope.$on('$cordovaNetwork:offline', function(event, networkState) {
+        $scope.isOnline = false;
+      });
+
+      if (typeof $localStorage.token !== 'undefined') {
+        $scope.userInfo = $localStorage.userInfo;
+        $state.go('app.dashboard', {}, {
+          reload: true
+        });
+      } else if (typeof $localStorage.accessData !== 'undefined') {
+        $state.go('app.login', {}, {
+          reload: true
+        });
+      } else {
+        $scope.accessShow = true;
+      }
+
       $timeout(function() {
-        if (typeof $localStorage.accessData !== 'undefined') {
-            $state.go('app.login');
-        } else {
-          $scope.accessShow = true;
-        }
         $ionicLoading.hide();
       }, 1000);
 
       $scope.accessData = {};
 
       $scope.access = function() {
-        $ionicLoading.show({
-          template: 'Loading...'
-        });
-        Auth.access({
-          org_key: $scope.accessData.orgKey
-        }).success(function(res) {
-          $scope.accessShow = false;
-          $localStorage.accessData = res;
-          $ionicLoading.hide();
-          $state.go('app.login');
-        }).error(function(e) {
-          $timeout(function() {
-            $ionicLoading.hide();
-            $cordovaDialogs.alert(e.message, 'Whoops', 'OK');
-          }, 1000);
-        });
-      };
-
-    }
-  ])
-
-  .controller('LoginCtrl', ['$scope', '$state', '$timeout', '$localStorage', '$ionicSideMenuDelegate', '$ionicLoading', '$cordovaDialogs', '$cordovaNetwork', '$ionicHistory', 'Auth', 'Me', 'All',
-    function($scope, $state, $timeout, $localStorage, $ionicSideMenuDelegate, $ionicLoading, $cordovaDialogs, $cordovaNetwork, $ionicHistory, Auth, Me, All) {
-      $ionicLoading.show({
-        template: 'Loading...'
-      });
-
-      $scope.$on('$ionicView.enter', function() {
-        $ionicSideMenuDelegate.canDragContent(false);
-      });
-      $scope.$on('$ionicView.leave', function() {
-        $ionicSideMenuDelegate.canDragContent(true);
-      });
-
-      $timeout(function() {
-        if (typeof $localStorage.token !== 'undefined') {
-          $scope.userInfo = $localStorage.userInfo;
-          $rootScope.$on('$cordovaNetwork:online', function(event, networkState) {
-            var onlineState = networkState;
-            $ionicLoading.show({
-              template: 'Syncing data...'
-            });
-            getBulletin();
+        if ($scope.isOnline) {
+          $ionicLoading.show({
+            template: 'Loading...'
           });
-
-          var isOnline = $cordovaNetwork.isOnline();
-
-          if (isOnline) {
-            getBulletin();
-          } else {
-            $state.go('app.dashboard');
-          }
+          Auth.access({
+            org_key: $scope.accessData.orgKey
+          }).success(function(res) {
+            $scope.accessShow = false;
+            $localStorage.accessData = res;
+            $ionicLoading.hide();
+            $state.go('app.login');
+          }).error(function(e) {
+            $timeout(function() {
+              $ionicLoading.hide();
+              $cordovaDialogs.alert(e.message, 'Whoops', 'OK');
+            }, 1000);
+          });
         } else {
-          $scope.loginShow = true;
+          $cordovaDialogs.alert('Please check your internet connection', 'Whoops', 'OK');
         }
-        $ionicLoading.hide();
-      }, 1000);
-
-      function getUserWithLeavesAndPaySlips() {
-        Me.include({
-          0: 'applications',
-          1: 'payslip',
-        }).success(function(res) {
-          $localStorage.notifications = res.data.notifications;
-          delete res.data.notifications;
-          $localStorage.userInfo = res.data;
-          $scope.userInfo = $localStorage.userInfo;
-          getBulletin();
-        }).error(function(e) {
-          $timeout(function() {
-            $ionicLoading.hide();
-            $cordovaDialogs.alert(e.message, 'Whoops', 'OK');
-          }, 1000);
-        });
-      }
-
-      function getBulletin() {
-        All.bulletinBoard({}).success(function(res) {
-          $localStorage.bulletinBoard = res.data;
-          $state.go('app.dashboard');
-          $ionicLoading.hide();
-        }).error(function(e) {
-          $timeout(function() {
-            $ionicLoading.hide();
-            $cordovaDialogs.alert(e.message, 'Whoops', 'OK');
-          }, 1000);
-        });
-      }
-
-      $scope.loginData = {};
-
-      $scope.login = function() {
-        $ionicLoading.show({
-          template: 'Loading...'
-        });
-        Auth.login({
-          email: $scope.loginData.email,
-          password: $scope.loginData.password
-        }).success(function(res) {
-          $scope.loginShow = false;
-          $localStorage.token = res.token;
-          getUserWithLeavesAndPaySlips();
-        }).error(function(e) {
-          $timeout(function() {
-            $ionicLoading.hide();
-            $cordovaDialogs.alert(e.message, 'Whoops', 'OK');
-          }, 1000);
-        });
       };
 
       $scope.logout = function() {
@@ -148,17 +78,116 @@ angular.module('beehrm.controllers', [])
           }, 1000);
         });
       };
+
     }
   ])
 
-.controller('DashboardCtrl', function($scope, $rootScope, $timeout, $ionicScrollDelegate, $ionicLoading, $cordovaDialogs, $localStorage, Me) {
+.controller('LoginCtrl', ['$scope', '$rootScope', '$state', '$timeout', '$localStorage', '$ionicLoading', '$cordovaDialogs', '$cordovaNetwork', 'Auth', 'Me', 'All',
+  function($scope, $rootScope, $state, $timeout, $localStorage, $ionicLoading, $cordovaDialogs, $cordovaNetwork, Auth, Me, All) {
+    $ionicLoading.show({
+      template: 'Loading...'
+    });
+
+    $scope.isOnline = $cordovaNetwork.isOnline();
+
+    $rootScope.$on('$cordovaNetwork:online', function(event, networkState) {
+      $scope.isOnline = true;
+      if (typeof $localStorage.token !== 'undefined') {
+        $ionicLoading.show({
+          template: 'Syncing data...'
+        });
+        getBulletin();
+      }
+    });
+
+    $rootScope.$on('$cordovaNetwork:offline', function(event, networkState) {
+      $scope.isOnline = false;
+    });
+
+    $timeout(function() {
+      if (typeof $localStorage.token !== 'undefined') {
+        $scope.userInfo = $localStorage.userInfo;
+        if ($scope.isOnline) {
+          getBulletin();
+        } else {
+          $state.go('app.dashboard');
+        }
+      } else {
+        $scope.loginShow = true;
+      }
+      $ionicLoading.hide();
+    }, 1000);
+
+    function getUserWithLeavesAndPaySlips() {
+      Me.include({
+        0: 'applications',
+        1: 'payslip',
+      }).success(function(res) {
+        $localStorage.notifications = res.data.notifications;
+        delete res.data.notifications;
+        $localStorage.userInfo = res.data;
+        $scope.userInfo = $localStorage.userInfo;
+        getBulletin();
+      }).error(function(e) {
+        $timeout(function() {
+          $ionicLoading.hide();
+          $cordovaDialogs.alert(e.message, 'Whoops', 'OK');
+        }, 1000);
+      });
+    }
+
+    function getBulletin() {
+      All.bulletinBoard({}).success(function(res) {
+        $localStorage.bulletinBoard = res.data;
+        $state.go('app.dashboard');
+        $ionicLoading.hide();
+      }).error(function(e) {
+        $timeout(function() {
+          $ionicLoading.hide();
+          $cordovaDialogs.alert(e.message, 'Whoops', 'OK');
+        }, 1000);
+      });
+    }
+
+    $scope.loginData = {};
+
+    $scope.login = function() {
+      if ($scope.isOnline) {
+        $ionicLoading.show({
+          template: 'Loading...'
+        });
+        Auth.login({
+          email: $scope.loginData.email,
+          password: $scope.loginData.password
+        }).success(function(res) {
+          $scope.loginShow = false;
+          $localStorage.token = res.token;
+          getUserWithLeavesAndPaySlips();
+        }).error(function(e) {
+          $timeout(function() {
+            $ionicLoading.hide();
+            $cordovaDialogs.alert(e.message, 'Whoops', 'OK');
+          }, 1000);
+        });
+      } else {
+        $cordovaDialogs.alert('Please check your internet connection', 'Whoops', 'OK');
+      }
+    };
+  }
+])
+
+.controller('DashboardCtrl', ['$scope', '$rootScope', '$localStorage', '$cordovaDialogs',
+  function($scope, $rootScope, $localStorage, $cordovaDialogs) {
   $scope.userInfo = $localStorage.userInfo;
   $rootScope.bulletinBoard = $localStorage.bulletinBoard;
 
-})
+  $scope.checkIn = function() {
+    $cordovaDialogs.alert('This section will be activated soon', 'Sorry :(', 'OK');
+  };
+}])
 
-
-.controller('NotificationsCtrl', function($scope, $localStorage, Me) {
+.controller('NotificationsCtrl', ['$scope', '$state', '$localStorage', 'Me',
+  function($scope, $state, $localStorage, Me) {
 
   $scope.notifications = $localStorage.notifications.data;
 
@@ -174,15 +203,16 @@ angular.module('beehrm.controllers', [])
         $cordovaDialogs.alert(e.message, 'Whoops', 'OK')
           .then(function() {
             if (e.status_code == 401) {
+              delete $localStorage.token;
               $state.go('app.login');
             }
           });
       }, 1000);
     });
   };
-})
+}])
 
-.controller('EventsCtrl', function($scope) {
+.controller('EventsCtrl', ['$scope', function($scope) {
 
   $scope.items = [{
     title: 'बाबुको मुख हेर्ने दिन - भाद्र २७, आइतवार',
@@ -244,10 +274,10 @@ angular.module('beehrm.controllers', [])
     month: 'Nov',
     id: 10
   }];
-})
+}])
 
-
-.controller('LeavesCtrl', function($scope, $localStorage, $timeout, $rootScope, $cordovaNetwork, $ionicLoading, $cordovaDialogs, $state, All) {
+.controller('LeavesCtrl', ['$scope', '$rootScope', '$state', '$localStorage', '$timeout', '$cordovaNetwork', '$ionicLoading', '$cordovaDialogs', 'All',
+  function($scope, $rootScope, $state, $localStorage, $timeout,  $cordovaNetwork, $ionicLoading, $cordovaDialogs, All) {
   $scope.leavesShow = false;
 
   $ionicLoading.show({
@@ -258,22 +288,20 @@ angular.module('beehrm.controllers', [])
     return false;
   };
 
-  $ionicLoading.show({
-    template: 'Loading...'
-  });
-
-  // listen for Online event
+  $scope.isOffline = $cordovaNetwork.isOffline();
   $rootScope.$on('$cordovaNetwork:online', function(event, networkState) {
-    var onlineState = networkState;
+    $scope.isOffline = false;
     $ionicLoading.show({
       template: 'Syncing data...'
     });
     leavesIfOnline();
   });
 
-  var isOffline = $cordovaNetwork.isOffline();
+  $rootScope.$on('$cordovaNetwork:offline', function(event, networkState) {
+    $scope.isOffline = true;
+  });
 
-  if (isOffline) {
+  if ($scope.isOffline) {
     $timeout(function() {
       $rootScope.applications = $localStorage.userInfo.applications.data;
       $scope.leavesShow = true;
@@ -308,6 +336,7 @@ angular.module('beehrm.controllers', [])
         $cordovaDialogs.alert(e.message, 'Whoops', 'OK')
           .then(function() {
             if (e.status_code == 401) {
+              delete $localStorage.token;
               $state.go('app.login');
             }
           });
@@ -336,6 +365,7 @@ angular.module('beehrm.controllers', [])
           $cordovaDialogs.alert(e.message, 'Whoops', 'OK')
             .then(function() {
               if (e.status_code == 401) {
+                delete $localStorage.token;
                 $state.go('app.login');
               }
             });
@@ -343,9 +373,10 @@ angular.module('beehrm.controllers', [])
       });
     };
   }
-})
+}])
 
-.controller('LeaveCtrl', function($scope, $rootScope, $ionicLoading, $timeout, $localStorage, $stateParams, $filter, $cordovaDialogs, $state) {
+.controller('LeaveCtrl', ['$scope', '$rootScope', '$state', '$ionicLoading', '$timeout', '$localStorage', '$stateParams', '$filter', '$cordovaDialogs',
+  function($scope, $rootScope, $state, $ionicLoading, $timeout, $localStorage, $stateParams, $filter, $cordovaDialogs) {
   $scope.leaveShow = false;
 
   $ionicLoading.show({
@@ -368,7 +399,6 @@ angular.module('beehrm.controllers', [])
 
   var hasDetails = fetchDetails(leaveId);
 
-  // Simulate a delay
   $timeout(function() {
     $ionicLoading.hide();
     if (hasDetails == 'NOTFOUND') {
@@ -381,9 +411,10 @@ angular.module('beehrm.controllers', [])
       $scope.leaveShow = true;
     }
   }, 1000);
-})
+}])
 
-.controller('BulletinBoardCtrl', function($scope, $rootScope, $ionicLoading, $timeout, $localStorage, $stateParams, $filter, $cordovaDialogs, $state) {
+.controller('BulletinBoardCtrl', ['$scope', '$rootScope', '$state', '$ionicLoading', '$timeout', '$localStorage', '$stateParams', '$filter', '$cordovaDialogs',
+  function($scope, $rootScope, $state, $ionicLoading, $timeout, $localStorage, $stateParams, $filter, $cordovaDialogs) {
   $scope.bulletinShow = false;
 
   $ionicLoading.show({
@@ -406,7 +437,6 @@ angular.module('beehrm.controllers', [])
 
   var hasDetails = fetchDetails(bulletinId);
 
-  // Simulate a delay
   $timeout(function() {
     $ionicLoading.hide();
     if (hasDetails == 'NOTFOUND') {
@@ -419,9 +449,10 @@ angular.module('beehrm.controllers', [])
       $scope.bulletinShow = true;
     }
   }, 1000);
-})
+}])
 
-.controller('ApplyLeaveCtrl', function($scope, $ionicModal, $timeout) {
+.controller('ApplyLeaveCtrl', ['$scope', '$ionicModal', '$timeout', '$cordovaDialogs',
+  function($scope, $ionicModal, $timeout, $cordovaDialogs) {
 
   $scope.expandText = function() {
     var element = document.getElementById("txtnotes");
@@ -454,7 +485,8 @@ angular.module('beehrm.controllers', [])
 
   // Open the leave modal
   $scope.applyLeave = function() {
-    $scope.modal.show();
+    $cordovaDialogs.alert('This section will be activated soon', 'Sorry :(', 'OK');
+    // $scope.modal.show();
   };
 
   // Perform the leave action when the user submits the leave form
@@ -523,9 +555,10 @@ angular.module('beehrm.controllers', [])
       console.log('Selected date is : ', val);
     }
   };
-})
+}])
 
-.controller('PayslipsCtrl', function($scope, $rootScope, $ionicLoading, $timeout, $localStorage, $cordovaNetwork, $cordovaDialogs, Me) {
+.controller('PayslipsCtrl', ['$scope', '$rootScope', '$state', '$ionicLoading', '$timeout', '$localStorage', '$cordovaNetwork', '$cordovaDialogs', 'Me',
+  function($scope, $rootScope, $state, $ionicLoading, $timeout, $localStorage, $cordovaNetwork, $cordovaDialogs, Me) {
   $scope.payslipsShow = false;
 
   $ionicLoading.show({
@@ -567,16 +600,18 @@ angular.module('beehrm.controllers', [])
         $cordovaDialogs.alert(e.message, 'Whoops', 'OK')
           .then(function() {
             if (e.status_code == 401) {
+              delete $localStorage.token;
               $state.go('app.login');
             }
           });
       }, 1000);
     });
   }
-})
+}])
 
 
-.controller('PayslipCtrl', function($scope, $rootScope, $ionicLoading, $timeout, $localStorage, $stateParams, $filter, $cordovaDialogs, $state) {
+.controller('PayslipCtrl', ['$scope', '$rootScope', '$state', '$ionicLoading', '$timeout', '$localStorage', '$stateParams', '$filter', '$cordovaDialogs',
+  function($scope, $rootScope, $state, $ionicLoading, $timeout, $localStorage, $stateParams, $filter, $cordovaDialogs) {
   $scope.payslipShow = false;
 
   $ionicLoading.show({
@@ -599,7 +634,6 @@ angular.module('beehrm.controllers', [])
 
   var hasDetails = fetchDetails(slipId);
 
-  // Simulate a delay
   $timeout(function() {
     $ionicLoading.hide();
     if (hasDetails == 'NOTFOUND') {
@@ -612,4 +646,4 @@ angular.module('beehrm.controllers', [])
       $scope.payslipShow = true;
     }
   }, 1000);
-});
+}]);

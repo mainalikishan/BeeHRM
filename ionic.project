@@ -1,6 +1,6 @@
 {
   "name": "beehrm",
-  "app_id": "",
+  "app_id": "beehrm",
   "browsers": [
     {
       "platform": "android",
