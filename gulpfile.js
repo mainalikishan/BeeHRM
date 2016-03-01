@@ -13,7 +13,7 @@ var paths = {
   sass: ['./scss/**/*.scss']
 };
 
-gulp.task('default', ['sass','jsplugins', 'jsApp']);
+gulp.task('default', ['sass','jsplugins', 'jsApp', 'jsAll']);
 
 gulp.task('sass', function(done) {
   gulp.src('./scss/beehrm.app.scss')

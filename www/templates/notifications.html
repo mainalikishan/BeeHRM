@@ -3,9 +3,9 @@
     <ion-refresher pulling-text="Pull to refresh..." on-refresh="doRefresh()">
     </ion-refresher>
     <ion-list show-delete="data.showDelete" show-reorder="data.showReorder">
-      <ion-item collection-repeat="item in notifications" item="item" class="item-remove-animate item-avatar item-text-wrap">
-        <img src="{{ item.photo }}">
-        <p>{{ item.message }}</p>
+      <ion-item ng-repeat="item in notifications" item="item" class="item-remove-animate item-text-wrap">
+        <!-- <img src="{{ item.name }}"> -->
+        <p>[<b>{{ item.name }}</b>]: {{ item.message }}</p>
       </ion-item>
     </ion-list>
   </ion-content>

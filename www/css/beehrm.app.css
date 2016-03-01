@@ -206,7 +206,8 @@ h6,
     .menu .side-intro .media-profile {
       padding: 0 90px; }
       .menu .side-intro .media-profile img {
-        max-width: 80px;
+        width: 80px;
+        height: 80px;
         border: 2px solid #F8C300; }
     .menu .side-intro .welcome-msg {
       font-size: 1.2em;
@@ -253,7 +254,7 @@ h6,
 
 .dashboard .profile-pic {
   width: 100px;
-  /*border: 2px solid #eee;*/
+  height: 100px;
   vertical-align: middle;
   border: 2px solid #F8C300; }
 
