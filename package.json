@@ -25,7 +25,8 @@
     "cordova-plugin-network-information",
     "cordova-plugin-dialogs",
     "cordova-plugin-crosswalk-webview",
-    "com.telerik.plugins.nativepagetransitions"
+    "com.telerik.plugins.nativepagetransitions",
+    "phonegap-plugin-push"
   ],
   "cordovaPlatforms": [
     "android"

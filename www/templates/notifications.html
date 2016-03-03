@@ -5,7 +5,16 @@
     <ion-list show-delete="data.showDelete" show-reorder="data.showReorder">
       <ion-item ng-repeat="item in notifications" item="item" class="item-remove-animate item-text-wrap">
         <!-- <img src="{{ item.name }}"> -->
-        <p>[<b>{{ item.name }}</b>]: {{ item.message }}</p>
+        <p>
+          <span ng-switch="item.name">
+            <span ng-switch-when="">
+              --
+            </span>
+            <span ng-switch-default>
+                [<b>{{ item.name }}</b>]:
+            </span>
+          </span>
+          {{ item.message }}</p>
       </ion-item>
     </ion-list>
   </ion-content>

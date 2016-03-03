@@ -1,11 +1,49 @@
-angular.module('beehrm', ['ionic', 'ngCordova', 'ngStorage', 'ngFx', 'ngAnimate', 'ionic-datepicker', 'beehrm.directives', 'beehrm.services', 'beehrm.factories', 'beehrm.controllers'])
+angular.module('beehrm', ['ionic', 'ionic.service.core', 'ngCordova', 'ngStorage', 'ngFx', 'ngAnimate', 'ionic-datepicker', 'beehrm.directives', 'beehrm.services', 'beehrm.factories', 'beehrm.controllers'])
   .constant('urls', {
     BASE_API: 'http://youngminds.com.np/beehrm_mobile/'
   })
 
-.run(['$ionicPlatform', function($ionicPlatform) {
+.run(['$ionicPlatform', '$cordovaDialogs', '$state', '$localStorage',
+  function($ionicPlatform, $cordovaDialogs, $state, $localStorage) {
 
   $ionicPlatform.ready(function() {
+    var push = new Ionic.Push({
+      "onNotification": function(notification) {
+        var goState = notification._payload.$state;
+        var goStateparams = notification._payload.$stateParams;
+        if(typeof goState !== 'undefined') {
+          // if(typeof goStateparams !== 'undefined') {
+          //   $state.go(goState, goStateparams);
+          // } else {
+          //   $state.go(goState);
+          // }
+          $cordovaDialogs.confirm(notification.text, notification.title, ['OK', 'Cancel'])
+            .then(function(buttonIndex) {
+              if (buttonIndex == 1) {
+                if(typeof goStateparams !== 'undefined') {
+                  $state.go(goState, goStateparams);
+                } else {
+                  $state.go(goState);
+                }
+              }
+            });
+          return true;
+        }
+      },
+      "onRegister": function(data) {
+        console.log(data);
+        $localStorage.deviceToken = data;
+      },
+      "pluginConfig": {
+        "android": {
+          "iconColor": "#F8C300"
+        }
+      }
+    });
+    var callback = function(pushToken) {
+    };
+
+    push.register(callback);
     // then override any default you want
     if (window.plugins) {
       window.plugins.nativepagetransitions.globalOptions.duration = 400;

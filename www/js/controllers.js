@@ -71,18 +71,33 @@ angular.module('beehrm.controllers', [])
       };
 
       $scope.logout = function() {
-        $ionicLoading.show({
-          template: 'Loading...'
-        });
-        Auth.logout(function() {
-          $timeout(function() {
-            $ionicHistory.clearCache();
-            $ionicHistory.clearHistory();
-            $scope.loginShow = true;
-            $state.go('app.login');
-            $ionicLoading.hide();
-          }, 1000);
-        });
+        $cordovaDialogs.confirm('Wanna LogOut?', 'BeeHRM', ['Yes','Cancel'])
+          .then(function (buttonIndex) {
+            if (buttonIndex == 1) {
+              $ionicLoading.show({
+                template: 'Loading...'
+              });
+              Auth.logout({}).success(function(res) {
+                delete $localStorage.token;
+                delete $localStorage.userInfo;
+                delete $localStorage.notifications;
+                delete $localStorage.payslip;
+                delete $localStorage.bulletinBoard;
+                $ionicHistory.clearCache();
+                $ionicHistory.clearHistory();
+                $scope.loginShow = true;
+                $state.go('app.login', {}, {
+                  reload: true
+                });
+                $ionicLoading.hide();
+              }).error(function(e) {
+                $timeout(function() {
+                  $ionicLoading.hide();
+                  $cordovaDialogs.alert(e.message, 'Whoops', 'OK');
+                }, 1000);
+              });
+            }
+          });
       };
 
     }
@@ -94,21 +109,27 @@ angular.module('beehrm.controllers', [])
       template: 'Loading...'
     });
 
-    $scope.isOnline = $cordovaNetwork.isOnline();
+    $scope.isOnline = false;
 
-    $rootScope.$on('$cordovaNetwork:online', function(event, networkState) {
-      $scope.isOnline = true;
-      if (typeof $localStorage.token !== 'undefined') {
-        $ionicLoading.show({
-          template: 'Syncing data...'
-        });
-        getBulletin();
-      }
-    });
+    document.addEventListener("deviceready", function() {
 
-    $rootScope.$on('$cordovaNetwork:offline', function(event, networkState) {
-      $scope.isOnline = false;
-    });
+      $scope.isOnline = $cordovaNetwork.isOnline();
+
+      $rootScope.$on('$cordovaNetwork:online', function(event, networkState) {
+        $scope.isOnline = true;
+        if (typeof $localStorage.token !== 'undefined') {
+          $ionicLoading.show({
+            template: 'Please wait...'
+          });
+          getBulletin();
+        }
+      });
+
+      $rootScope.$on('$cordovaNetwork:offline', function(event, networkState) {
+        $scope.isOnline = false;
+      });
+
+    }, false);
 
     $timeout(function() {
       if (typeof $localStorage.token !== 'undefined') {
@@ -123,6 +144,19 @@ angular.module('beehrm.controllers', [])
       }
       $ionicLoading.hide();
     }, 1000);
+
+    function saveDeviceToken() {
+      Auth.deviceToken({
+        deviceToken: $localStorage.deviceToken._token
+      }).success(function(res) {
+        console.log(res);
+      }).error(function(e) {
+        $timeout(function() {
+          $ionicLoading.hide();
+          $cordovaDialogs.alert(e.message, 'Whoops', 'OK');
+        }, 1000);
+      });
+    }
 
     function getUserWithLeavesAndPaySlips() {
       Me.include({
@@ -168,6 +202,9 @@ angular.module('beehrm.controllers', [])
         }).success(function(res) {
           $scope.loginShow = false;
           $localStorage.token = res.token;
+          if (typeof $localStorage.deviceToken._token !== 'undefined') {
+            saveDeviceToken();
+          }
           getUserWithLeavesAndPaySlips();
         }).error(function(e) {
           $timeout(function() {
@@ -189,10 +226,12 @@ angular.module('beehrm.controllers', [])
       $scope.isOffline = $cordovaNetwork.isOffline();
       $rootScope.$on('$cordovaNetwork:online', function(event, networkState) {
         $scope.isOffline = false;
-        $ionicLoading.show({
-          template: 'Syncing data...'
-        });
-        getBulletin();
+        if (typeof $localStorage.token !== 'undefined') {
+          $ionicLoading.show({
+            template: 'Syncing data...'
+          });
+          getBulletin();
+        }
       });
 
       $rootScope.$on('$cordovaNetwork:offline', function(event, networkState) {
