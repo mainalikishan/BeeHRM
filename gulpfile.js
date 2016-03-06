@@ -7,13 +7,14 @@ var minifyCss = require('gulp-minify-css');
 var rename = require('gulp-rename');
 var sh = require('shelljs');
 var uglify = require('gulp-uglifyjs');
+var htmlmin = require('gulp-htmlmin');
 
 
 var paths = {
   sass: ['./scss/**/*.scss']
 };
 
-gulp.task('default', ['sass', 'jsplugins', 'jsApp']);
+gulp.task('default', ['sass', 'jsplugins', 'jsApp', 'minifyHTML']);
 
 gulp.task('sass', function(done) {
   gulp.src('./scss/beehrm.app.scss')
@@ -95,4 +96,11 @@ gulp.task('jsAll', function() {
       ])
     .pipe(concat('beehrm.min.js'))
     .pipe(gulp.dest('www/lib/beehrm'))
+});
+
+
+gulp.task('minifyHTML', function() {
+  return gulp.src('www/templates/*.html')
+    .pipe(htmlmin({collapseWhitespace: true, removeComments: true}))
+    .pipe(gulp.dest('www/templates/dist'))
 });

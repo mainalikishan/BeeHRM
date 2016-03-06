@@ -6,68 +6,70 @@ angular.module('beehrm', ['ionic', 'ionic.service.core', 'ngCordova', 'ngStorage
 .run(['$ionicPlatform', '$cordovaDialogs', '$state', '$localStorage',
   function($ionicPlatform, $cordovaDialogs, $state, $localStorage) {
 
-  $ionicPlatform.ready(function() {
-    var push = new Ionic.Push({
-      "onNotification": function(notification) {
-        var goState = notification._payload.$state;
-        var goStateparams = notification._payload.$stateParams;
-        if(typeof goState !== 'undefined') {
-          // if(typeof goStateparams !== 'undefined') {
-          //   $state.go(goState, goStateparams);
-          // } else {
-          //   $state.go(goState);
-          // }
-          $cordovaDialogs.confirm(notification.text, notification.title, ['OK', 'Cancel'])
-            .then(function(buttonIndex) {
-              if (buttonIndex == 1) {
-                if(typeof goStateparams !== 'undefined') {
-                  $state.go(goState, goStateparams);
-                } else {
-                  $state.go(goState);
+    $ionicPlatform.ready(function() {
+      var push = new Ionic.Push({
+        "onNotification": function(notification) {
+          var goState = notification._payload.$state;
+          var goStateparams = notification._payload.$stateParams;
+          if (typeof goState !== 'undefined') {
+            // if(typeof goStateparams !== 'undefined') {
+            //   $state.go(goState, goStateparams);
+            // } else {
+            //   $state.go(goState);
+            // }
+            $cordovaDialogs.confirm(notification.text, notification.title, ['OK', 'Cancel'])
+              .then(function(buttonIndex) {
+                if (buttonIndex == 1) {
+                  if (typeof goStateparams !== 'undefined') {
+                    $state.go(goState, goStateparams);
+                  } else {
+                    $state.go(goState);
+                  }
                 }
-              }
-            });
-          return true;
+              });
+            return true;
+          }
+        },
+        "onRegister": function(data) {
+          console.log(data);
+          $localStorage.deviceToken = data;
+        },
+        "pluginConfig": {
+          "android": {
+            'iconColor': "#F8C300",
+            'badge': true,
+            'icon': 'icon'
+          }
         }
-      },
-      "onRegister": function(data) {
-        console.log(data);
-        $localStorage.deviceToken = data;
-      },
-      "pluginConfig": {
-        "android": {
-          "iconColor": "#F8C300"
-        }
+      });
+      var callback = function(pushToken) {};
+
+      push.register(callback);
+      // then override any default you want
+      if (window.plugins) {
+        window.plugins.nativepagetransitions.globalOptions.duration = 400;
+        window.plugins.nativepagetransitions.globalOptions.iosdelay = 250;
+        window.plugins.nativepagetransitions.globalOptions.androiddelay = 250;
+        window.plugins.nativepagetransitions.globalOptions.winphonedelay = 250;
+        window.plugins.nativepagetransitions.globalOptions.slowdownfactor = 4;
+        // these are used for slide left/right only currently
+        window.plugins.nativepagetransitions.globalOptions.fixedPixelsTop = 0;
+        window.plugins.nativepagetransitions.globalOptions.fixedPixelsBottom = 0;
+      }
+
+      // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
+      // for form inputs)
+      if (window.cordova && window.cordova.plugins.Keyboard) {
+        cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
+        cordova.plugins.Keyboard.disableScroll(true);
+
+      }
+      if (window.StatusBar) {
+        StatusBar.backgroundColorByHexString("#445963");
       }
     });
-    var callback = function(pushToken) {
-    };
-
-    push.register(callback);
-    // then override any default you want
-    if (window.plugins) {
-      window.plugins.nativepagetransitions.globalOptions.duration = 400;
-      window.plugins.nativepagetransitions.globalOptions.iosdelay = 250;
-      window.plugins.nativepagetransitions.globalOptions.androiddelay = 250;
-      window.plugins.nativepagetransitions.globalOptions.winphonedelay = 250;
-      window.plugins.nativepagetransitions.globalOptions.slowdownfactor = 4;
-      // these are used for slide left/right only currently
-      window.plugins.nativepagetransitions.globalOptions.fixedPixelsTop = 0;
-      window.plugins.nativepagetransitions.globalOptions.fixedPixelsBottom = 0;
-    }
-
-    // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
-    // for form inputs)
-    if (window.cordova && window.cordova.plugins.Keyboard) {
-      cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
-      cordova.plugins.Keyboard.disableScroll(true);
-
-    }
-    if (window.StatusBar) {
-      StatusBar.backgroundColorByHexString("#445963");
-    }
-  });
-}])
+  }
+])
 
 .config(['$stateProvider', '$urlRouterProvider', '$ionicConfigProvider', '$httpProvider', function($stateProvider, $urlRouterProvider, $ionicConfigProvider, $httpProvider) {
   $stateProvider
@@ -75,7 +77,7 @@ angular.module('beehrm', ['ionic', 'ionic.service.core', 'ngCordova', 'ngStorage
     .state('app', {
     url: '/app',
     abstract: true,
-    templateUrl: 'templates/menu.html',
+    templateUrl: 'templates/dist/menu.html',
     controller: 'AppCtrl'
   })
 
@@ -83,7 +85,7 @@ angular.module('beehrm', ['ionic', 'ionic.service.core', 'ngCordova', 'ngStorage
     url: '/access',
     views: {
       'menuContent': {
-        templateUrl: 'templates/access.html'
+        templateUrl: 'templates/dist/access.html'
       }
     }
   })
@@ -92,7 +94,7 @@ angular.module('beehrm', ['ionic', 'ionic.service.core', 'ngCordova', 'ngStorage
     url: '/login',
     views: {
       'menuContent': {
-        templateUrl: 'templates/login.html',
+        templateUrl: 'templates/dist/login.html',
         controller: 'LoginCtrl'
       }
     }
@@ -102,7 +104,7 @@ angular.module('beehrm', ['ionic', 'ionic.service.core', 'ngCordova', 'ngStorage
     url: '/events',
     views: {
       'menuContent': {
-        templateUrl: 'templates/events.html',
+        templateUrl: 'templates/dist/events.html',
         controller: 'EventsCtrl'
       }
     }
@@ -112,7 +114,7 @@ angular.module('beehrm', ['ionic', 'ionic.service.core', 'ngCordova', 'ngStorage
     url: '/notifications',
     views: {
       'menuContent': {
-        templateUrl: 'templates/notifications.html',
+        templateUrl: 'templates/dist/notifications.html',
         controller: 'NotificationsCtrl'
       }
     }
@@ -122,7 +124,7 @@ angular.module('beehrm', ['ionic', 'ionic.service.core', 'ngCordova', 'ngStorage
     url: '/leaves',
     views: {
       'menuContent': {
-        templateUrl: 'templates/leaves.html',
+        templateUrl: 'templates/dist/leaves.html',
         controller: 'LeavesCtrl'
       }
     }
@@ -132,7 +134,7 @@ angular.module('beehrm', ['ionic', 'ionic.service.core', 'ngCordova', 'ngStorage
     url: '/leaves-balance',
     views: {
       'menuContent': {
-        templateUrl: 'templates/leaves.balance.html'
+        templateUrl: 'templates/dist/leaves.balance.html'
       }
     }
   })
@@ -141,7 +143,7 @@ angular.module('beehrm', ['ionic', 'ionic.service.core', 'ngCordova', 'ngStorage
     url: '/leaves/:leaveId',
     views: {
       'menuContent': {
-        templateUrl: 'templates/leave.html',
+        templateUrl: 'templates/dist/leave.html',
         controller: 'LeaveCtrl'
       }
     }
@@ -151,7 +153,7 @@ angular.module('beehrm', ['ionic', 'ionic.service.core', 'ngCordova', 'ngStorage
     url: '/bulletinBoards/:bulletinId',
     views: {
       'menuContent': {
-        templateUrl: 'templates/bulletin.html',
+        templateUrl: 'templates/dist/bulletin.html',
         controller: 'BulletinBoardCtrl'
       }
     }
@@ -161,7 +163,7 @@ angular.module('beehrm', ['ionic', 'ionic.service.core', 'ngCordova', 'ngStorage
     url: '/payslips',
     views: {
       'menuContent': {
-        templateUrl: 'templates/payslips.html',
+        templateUrl: 'templates/dist/payslips.html',
         controller: 'PayslipsCtrl'
       }
     }
@@ -171,7 +173,7 @@ angular.module('beehrm', ['ionic', 'ionic.service.core', 'ngCordova', 'ngStorage
     url: '/payslips/:slipId',
     views: {
       'menuContent': {
-        templateUrl: 'templates/payslip.html',
+        templateUrl: 'templates/dist/payslip.html',
         controller: 'PayslipCtrl'
       }
     }
@@ -181,7 +183,7 @@ angular.module('beehrm', ['ionic', 'ionic.service.core', 'ngCordova', 'ngStorage
     url: '/dashboard',
     views: {
       'menuContent': {
-        templateUrl: 'templates/dashboard.html',
+        templateUrl: 'templates/dist/dashboard.html',
         controller: 'DashboardCtrl'
       }
     }

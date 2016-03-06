@@ -9,7 +9,7 @@ angular.module('beehrm.services', [])
                 "direction": direction
               },
               function(msg) {
-                console.log("success: " + msg);
+                // console.log("success: " + msg);
               },
               function(msg) {
                 // alert("error: " + msg);
@@ -21,7 +21,7 @@ angular.module('beehrm.services', [])
                 "direction": direction
               },
               function(msg) {
-                console.log("success: " + msg);
+                // console.log("success: " + msg);
               },
               function(msg) {
                 // alert("error: " + msg);
@@ -34,7 +34,7 @@ angular.module('beehrm.services', [])
 
               },
               function(msg) {
-                console.log("success: " + msg);
+                // console.log("success: " + msg);
               },
               function(msg) {
                 // alert("error: " + msg);
@@ -61,7 +61,7 @@ angular.module('beehrm.services', [])
                 "direction": direction
               },
               function(msg) {
-                console.log("success: " + msg);
+                // console.log("success: " + msg);
               },
               function(msg) {
                 // alert("error: " + msg);
@@ -74,7 +74,7 @@ angular.module('beehrm.services', [])
                 "direction": direction
               },
               function(msg) {
-                console.log("success: " + msg);
+                // console.log("success: " + msg);
               },
               function(msg) {
                 // alert("error: " + msg);

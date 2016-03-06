@@ -5,11 +5,12 @@
   </ion-nav-buttons>
   <ion-content class="has-footer has-tabs">
     <div class="dashboard">
-      <div class="profile-bg" style="background-image: url(img/profile-bg.jpg);">
+      <!-- style="background-image: url(img/profile-bg.jpg);" -->
+      <div class="profile-bg">
         <div class="profile-bg-overlay"></div>
         <div class="profile">
           <div class="text-center" style="margin: 0 auto;">
-            <img src="{{ userInfo.image }}" class="img-circle img-centered profile-pic" alt="">
+            <img src="{{ userInfo.image }}" class="img-circle img-centered profile-pic">
             <div class="profile-name">
               {{ userInfo.name }}
             </div>

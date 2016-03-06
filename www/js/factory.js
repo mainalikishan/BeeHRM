@@ -35,6 +35,15 @@ angular.module('beehrm.factories', [])
         });
       },
       logout: function(input) {
+        $http({
+          url: $localStorage.accessData.org_app_url + '/delete-device-token',
+          method: 'GET',
+          dataType: 'json',
+          headers: {
+            "Content-Type": "application/x.vdn.v1+json",
+            "Authorization": "bearer " + $localStorage.token
+          }
+        });
         return $http({
           url: $localStorage.accessData.org_app_url + '/logout',
           method: 'GET',
