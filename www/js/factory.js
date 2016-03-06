@@ -114,6 +114,18 @@ angular.module('beehrm.factories', [])
           "Authorization": "bearer " + $localStorage.token
         }
       });
+    },
+    submitLeaveApplication: function(input) {
+      return $http({
+        url: $localStorage.accessData.org_app_url + '/leave-application',
+        method: 'POST',
+        dataType: 'json',
+        data: input,
+        headers: {
+          "Content-Type": "application/x.vdn.v1+json",
+          "Authorization": "bearer " + $localStorage.token
+        }
+      });
     }
   };
 }])

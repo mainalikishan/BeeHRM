@@ -576,8 +576,14 @@ angular.module('beehrm.controllers', [])
   }
 ])
 
-.controller('ApplyLeaveCtrl', ['$scope', '$ionicModal', '$timeout', '$cordovaDialogs',
-  function($scope, $ionicModal, $timeout, $cordovaDialogs) {
+.controller('ApplyLeaveCtrl', ['$scope', '$ionicModal', '$timeout', '$cordovaDialogs', '$ionicLoading', '$filter', 'All',
+  function($scope, $ionicModal, $timeout, $cordovaDialogs, $ionicLoading, $filter, All) {
+
+    $scope.leaveDaysType = {
+      checked: false
+    };
+    $scope.endDateHide = false;
+    $scope.whichHalfShow = false;
 
     $scope.expandText = function() {
       var element = document.getElementById("txtnotes");
@@ -585,19 +591,43 @@ angular.module('beehrm.controllers', [])
     };
 
     // Form data for the leave modal
-    $scope.options = [{
+    $scope.leaveTypeOptions = [{
       name: "Paid",
       id: 1
     }, {
       name: "Unpaid",
       id: 2
     }];
+    $scope.halfTypeOptions = [{
+      name: "First Half",
+      id: 1
+    }, {
+      name: "Second Half",
+      id: 2
+    }];
     $scope.leaveData = {
-      'leaveType': $scope.options[1],
+      'leaveType': $scope.leaveTypeOptions[1],
+      'halfType': $scope.halfTypeOptions[0],
+      'subject': "",
+      'description': ""
+    };
+
+    $scope.leaveData.leave_days_type = 0;
+
+    $scope.leaveDaysTypeChange = function() {
+      if ($scope.leaveData.leaveDaysType.checked === true) {
+        $scope.endDateHide = true;
+        $scope.whichHalfShow = true;
+        $scope.leaveData.leave_days_type = 1;
+      } else {
+        $scope.endDateHide = false;
+        $scope.whichHalfShow = false;
+        $scope.leaveData.leave_days_type = 0;
+      }
     };
 
     // Create the leave modal that we will use later
-    $ionicModal.fromTemplateUrl('templates/leave.apply.html', {
+    $ionicModal.fromTemplateUrl('templates/dist/leave.apply.html', {
       scope: $scope
     }).then(function(modal) {
       $scope.modal = modal;
@@ -610,19 +640,52 @@ angular.module('beehrm.controllers', [])
 
     // Open the leave modal
     $scope.applyLeave = function() {
-      $cordovaDialogs.alert('This section will be activated soon', 'Sorry :(', 'OK');
-      // $scope.modal.show();
+      // $cordovaDialogs.alert('This section will be activated soon', 'Sorry :(', 'OK');
+      $scope.modal.show();
     };
 
     // Perform the leave action when the user submits the leave form
     $scope.doLeave = function() {
-      console.log('Doing leave', $scope.leaveData);
+      if ($scope.leaveData.subject.length === 0) {
+        $cordovaDialogs.alert("Subject field is required", 'Whoops', 'OK');
+      } else if ($scope.leaveData.description.length === 0) {
+        $cordovaDialogs.alert("Description field is required", 'Whoops', 'OK');
+      } else {
+        $cordovaDialogs.confirm('Wanna submit?', 'BeeHRM', ['Yes', 'Cancel'])
+          .then(function(buttonIndex) {
+            if (buttonIndex == 1) {
+              $ionicLoading.show({
+                template: 'Loading...'
+              });
+              console.log('Doing leave', $scope.leaveData);
+              All.submitLeaveApplication({
+                leave_days_type: $scope.leaveData.leave_days_type,
+                subject: $scope.leaveData.subject,
+                leave_type: $scope.leaveData.leaveType.name,
+                leave_days_part: $scope.leaveData.halfType.name,
+                startdt: $scope.leaveData.startDate,
+                enddt: $scope.leaveData.endDate,
+                desc: $scope.leaveData.description
+              }).success(function(res) {
+                console.log(res);
+              }).error(function(e) {
+                console.log(e);
+                $timeout(function() {
+                  $ionicLoading.hide();
+                  $cordovaDialogs.alert(e.message, 'Whoops', 'OK');
+                }, 1000);
+              });
 
-      // Simulate a leave delay. Remove this and replace with your leave
-      // code if using a leave system
-      $timeout(function() {
-        $scope.closeLeave();
-      }, 1000);
+              // Simulate a leave delay. Remove this and replace with your leave
+              // code if using a leave system
+              // $timeout(function() {
+              //   // $scope.closeLeave();
+              //   $ionicLoading.hide();
+              // }, 1000);
+            }
+          });
+      }
+
     };
 
     $scope.startDatepickerObject = {
@@ -630,9 +693,9 @@ angular.module('beehrm.controllers', [])
       todayLabel: 'Today', //Optional
       closeLabel: 'Close', //Optional
       setLabel: 'Set', //Optional
-      setButtonType: 'button-balanced button-outline', //Optional
-      todayButtonType: 'button-balanced button-outline', //Optional
-      closeButtonType: 'button-balanced button-outline', //Optional
+      setButtonType: 'button-accent button-outline', //Optional
+      todayButtonType: 'button-accent button-outline', //Optional
+      closeButtonType: 'button-accent button-outline', //Optional
       mondayFirst: true, //Optional
       templateType: 'popup', //Optional
       modalHeaderColor: 'bar-primary', //Optional
@@ -643,12 +706,14 @@ angular.module('beehrm.controllers', [])
     };
 
     $scope.startDate = new Date();
+    $scope.leaveData.startDate = $filter('date')($scope.startDate, "yyyy-MM-dd");
 
     var startDatePickerCallback = function(val) {
       if (typeof(val) === 'undefined') {
         console.log('No date selected');
       } else {
         $scope.startDate = val;
+        $scope.leaveData.endDate = $filter('date')($scope.startDate, "yyyy-MM-dd");
         console.log('Selected date is : ', val);
       }
     };
@@ -658,9 +723,9 @@ angular.module('beehrm.controllers', [])
       todayLabel: 'Today', //Optional
       closeLabel: 'Close', //Optional
       setLabel: 'Set', //Optional
-      setButtonType: 'button-balanced button-outline', //Optional
-      todayButtonType: 'button-balanced button-outline', //Optional
-      closeButtonType: 'button-balanced button-outline', //Optional
+      setButtonType: 'button-accent button-outline', //Optional
+      todayButtonType: 'button-accent button-outline', //Optional
+      closeButtonType: 'button-accent button-outline', //Optional
       mondayFirst: true, //Optional
       templateType: 'popup', //Optional
       modalHeaderColor: 'bar-primary', //Optional
@@ -671,12 +736,14 @@ angular.module('beehrm.controllers', [])
     };
 
     $scope.endDate = new Date();
+    $scope.leaveData.endDate = $filter('date')($scope.endDate, "yyyy-MM-dd");
 
     var endDatePickerCallback = function(val) {
       if (typeof(val) === 'undefined') {
         console.log('No date selected');
       } else {
         $scope.endDate = val;
+        $scope.leaveData.endDate = $filter('date')($scope.endDate, "yyyy-MM-dd");
         console.log('Selected date is : ', val);
       }
     };
