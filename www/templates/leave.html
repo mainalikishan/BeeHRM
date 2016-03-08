@@ -23,7 +23,8 @@
         <i class="icon" ng-class="{'ion-ios-checkmark balanced': leaveDetails.status == 'approved', 'ion-ios-close assertive': leaveDetails.status == 'rejected', 'ion-ios-minus energized': leaveDetails.status == 'pending'}"></i> {{ leaveDetails.status }}
       </div>
       <div class="item item-avatar item-text-wrap" style="border-bottom:0;">
-        <img src="{{ leaveDetails.approver_photo }}">
+        <!-- <img src="{{ leaveDetails.approver_photo }}"> -->
+        <img src="img/avatar.jpg">
         <h2>{{ leaveDetails.approver }}</h2>
         <p>{{ (!leaveDetails.approver_message) ? 'No Comment' : leaveDetails.approver_message  }}</p>
       </div>

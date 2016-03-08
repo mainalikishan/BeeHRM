@@ -600,10 +600,10 @@ angular.module('beehrm.controllers', [])
     }];
     $scope.halfTypeOptions = [{
       name: "First Half",
-      id: 1
+      id: 'F'
     }, {
       name: "Second Half",
-      id: 2
+      id: 'S'
     }];
     $scope.leaveData = {
       'leaveType': $scope.leaveTypeOptions[1],
@@ -612,17 +612,17 @@ angular.module('beehrm.controllers', [])
       'description': ""
     };
 
-    $scope.leaveData.leave_days_type = 0;
+    $scope.leaveData.leave_days_type = 'F';
 
     $scope.leaveDaysTypeChange = function() {
       if ($scope.leaveData.leaveDaysType.checked === true) {
         $scope.endDateHide = true;
         $scope.whichHalfShow = true;
-        $scope.leaveData.leave_days_type = 1;
+        $scope.leaveData.leave_days_type = 'P';
       } else {
         $scope.endDateHide = false;
         $scope.whichHalfShow = false;
-        $scope.leaveData.leave_days_type = 0;
+        $scope.leaveData.leave_days_type = 'F';
       }
     };
 
@@ -657,19 +657,32 @@ angular.module('beehrm.controllers', [])
               $ionicLoading.show({
                 template: 'Loading...'
               });
-              console.log('Doing leave', $scope.leaveData);
               All.submitLeaveApplication({
                 leave_days_type: $scope.leaveData.leave_days_type,
                 subject: $scope.leaveData.subject,
-                leave_type: $scope.leaveData.leaveType.name,
-                leave_days_part: $scope.leaveData.halfType.name,
+                leave_type: $scope.leaveData.leaveType.id,
+                leave_days_part: $scope.leaveData.halfType.id,
                 startdt: $scope.leaveData.startDate,
                 enddt: $scope.leaveData.endDate,
                 desc: $scope.leaveData.description
               }).success(function(res) {
-                console.log(res);
+                $timeout(function() {
+                  $ionicLoading.hide();
+                  $cordovaDialogs.alert(res, 'Success', 'OK')
+                    .then(function() {
+                      $scope.leaveData.leave_days_type = 'F';
+                      $scope.leaveData = {
+                        'leaveType': $scope.leaveTypeOptions[1],
+                        'halfType': $scope.halfTypeOptions[0],
+                        'subject': "",
+                        'description': "",
+                        'startDate': $scope.leaveData.startDate,
+                        'endDate': $scope.leaveData.startDate
+                      };
+                      $scope.modal.hide();
+                    });
+                }, 50);
               }).error(function(e) {
-                console.log(e);
                 $timeout(function() {
                   $ionicLoading.hide();
                   $cordovaDialogs.alert(e.message, 'Whoops', 'OK');
@@ -706,14 +719,14 @@ angular.module('beehrm.controllers', [])
     };
 
     $scope.startDate = new Date();
-    $scope.leaveData.startDate = $filter('date')($scope.startDate, "yyyy-MM-dd");
+    $scope.leaveData.startDate = $filter('date')($scope.startDate, "yyyy-MM-dd", "+0545");
 
     var startDatePickerCallback = function(val) {
       if (typeof(val) === 'undefined') {
         console.log('No date selected');
       } else {
         $scope.startDate = val;
-        $scope.leaveData.endDate = $filter('date')($scope.startDate, "yyyy-MM-dd");
+        $scope.leaveData.startDate = $filter('date')($scope.startDate, "yyyy-MM-dd", "+0545");
         console.log('Selected date is : ', val);
       }
     };
@@ -736,14 +749,14 @@ angular.module('beehrm.controllers', [])
     };
 
     $scope.endDate = new Date();
-    $scope.leaveData.endDate = $filter('date')($scope.endDate, "yyyy-MM-dd");
+    $scope.leaveData.endDate = $filter('date')($scope.endDate, "yyyy-MM-dd", "+0545");
 
     var endDatePickerCallback = function(val) {
       if (typeof(val) === 'undefined') {
         console.log('No date selected');
       } else {
         $scope.endDate = val;
-        $scope.leaveData.endDate = $filter('date')($scope.endDate, "yyyy-MM-dd");
+        $scope.leaveData.endDate = $filter('date')($scope.endDate, "yyyy-MM-dd", "+0545");
         console.log('Selected date is : ', val);
       }
     };
