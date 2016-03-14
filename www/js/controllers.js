@@ -351,124 +351,142 @@ angular.module('beehrm.controllers', [])
   }
 ])
 
-.controller('CheckEventCtrl', ['$scope', '$ionicModal', '$timeout', '$cordovaDialogs', '$localStorage', '$ionicLoading', '$filter', '$state', 'All',
-  function($scope, $ionicModal, $timeout, $cordovaDialogs, $localStorage, $ionicLoading, $filter, $state, All) {
+.controller('CheckEventCtrl', ['$scope', '$rootScope', '$ionicModal', '$timeout', '$cordovaNetwork', '$cordovaDialogs', '$localStorage', '$ionicLoading', '$filter', '$state', 'All',
+  function($scope, $rootScope, $ionicModal, $timeout, $cordovaNetwork, $cordovaDialogs, $localStorage, $ionicLoading, $filter, $state, All) {
+    document.addEventListener("deviceready", function() {
+      $scope.isOffline = $cordovaNetwork.isOffline();
 
-    $scope.checkEventData = {};
-
-    // Create the leave modal that we will use later
-    $ionicModal.fromTemplateUrl('templates/dist/events.check.html', {
-      scope: $scope
-    }).then(function(modal) {
-      $scope.modal = modal;
-    });
-
-    // Triggered in the leave modal to close it
-    $scope.closeCheckEvent = function() {
-      $scope.modal.hide();
-    };
-
-    // Open the leave modal
-    $scope.openCheckEvent = function() {
-      // $cordovaDialogs.alert('This section will be activated soon', 'Sorry :(', 'OK');
-      $scope.modal.show();
-    };
-
-    // Perform the leave action when the user submits the leave form
-    $scope.checkEvents = function() {
-      $ionicLoading.show({
-        template: 'Loading...'
+      $rootScope.$on('$cordovaNetwork:online', function(event, networkState) {
+        $scope.isOffline = false;
       });
-      All.checkLeaveApplication({
-        0: 'from=' + $scope.checkEventData.startDate + '&to=' + $scope.checkEventData.endDate
-      }).success(function(res) {
-        $timeout(function() {
-          $ionicLoading.hide();
-          if (res.data.length === 0) {
-            $cordovaDialogs.alert('No events found in given dates', 'BeeHRM', 'OK')
-              .then(function() {
-                $scope.checkEventData = {
-                  'startDate': $scope.checkEventData.startDate,
-                  'endDate': $scope.checkEventData.startDate
-                };
-              });
-          } else {
-            $ionicLoading.show({
-              template: 'Loading...'
+
+      $rootScope.$on('$cordovaNetwork:offline', function(event, networkState) {
+        $scope.isOffline = true;
+      });
+
+      $scope.checkEventData = {};
+
+      // Create the leave modal that we will use later
+      $ionicModal.fromTemplateUrl('templates/dist/events.check.html', {
+        scope: $scope
+      }).then(function(modal) {
+        $scope.modal = modal;
+      });
+
+      // Triggered in the leave modal to close it
+      $scope.closeCheckEvent = function() {
+        $scope.modal.hide();
+      };
+
+      // Open the leave modal
+      $scope.openCheckEvent = function() {
+        // $cordovaDialogs.alert('This section will be activated soon', 'Sorry :(', 'OK');
+        $scope.modal.show();
+      };
+
+      // Perform the leave action when the user submits the leave form
+      $scope.checkEvents = function() {
+        if ($scope.isOffline === false) {
+          $ionicLoading.show({
+            template: 'Loading...'
+          });
+          All.checkLeaveApplication({
+            0: 'from=' + $scope.checkEventData.startDate + '&to=' + $scope.checkEventData.endDate
+          }).success(function(res) {
+            $timeout(function() {
+              $ionicLoading.hide();
+              if (res.data.length === 0) {
+                $cordovaDialogs.alert('No events found in given dates', 'BeeHRM', 'OK')
+                  .then(function() {
+                    $scope.checkEventData = {
+                      'startDate': $scope.checkEventData.startDate,
+                      'endDate': $scope.checkEventData.startDate
+                    };
+                  });
+              } else {
+                $ionicLoading.show({
+                  template: 'Loading...'
+                });
+                $localStorage.events = res.data;
+                $scope.modal.hide();
+                $state.go('app.events');
+              }
+
+            }, 50);
+          }).error(function(e) {
+            $timeout(function() {
+              $ionicLoading.hide();
+              $cordovaDialogs.alert(e.message, 'Whoops', 'OK');
+            }, 1000);
+          });
+        } else {
+          $cordovaDialogs.alert('Please check your internet connection', 'Whoops', 'OK')
+            .then(function() {
+              $state.go('app.dashboard');
             });
-            $localStorage.events = res.data;
-            $scope.modal.hide();
-            $state.go('app.events');
-          }
+        }
+      };
 
-        }, 50);
-      }).error(function(e) {
-        $timeout(function() {
-          $ionicLoading.hide();
-          $cordovaDialogs.alert(e.message, 'Whoops', 'OK');
-        }, 1000);
-      });
-    };
+      $scope.startDatepickerObject = {
+        titleLabel: 'Select Date', //Optional
+        todayLabel: 'Today', //Optional
+        closeLabel: 'Close', //Optional
+        setLabel: 'Set', //Optional
+        setButtonType: 'button-accent button-outline', //Optional
+        todayButtonType: 'button-accent button-outline', //Optional
+        closeButtonType: 'button-accent button-outline', //Optional
+        mondayFirst: true, //Optional
+        templateType: 'popup', //Optional
+        modalHeaderColor: 'bar-primary', //Optional
+        modalFooterColor: 'bar-primary', //Optional
+        callback: function(val) { //Mandatory
+          startDatePickerCallback(val);
+        }
+      };
 
-    $scope.startDatepickerObject = {
-      titleLabel: 'Select Date', //Optional
-      todayLabel: 'Today', //Optional
-      closeLabel: 'Close', //Optional
-      setLabel: 'Set', //Optional
-      setButtonType: 'button-accent button-outline', //Optional
-      todayButtonType: 'button-accent button-outline', //Optional
-      closeButtonType: 'button-accent button-outline', //Optional
-      mondayFirst: true, //Optional
-      templateType: 'popup', //Optional
-      modalHeaderColor: 'bar-primary', //Optional
-      modalFooterColor: 'bar-primary', //Optional
-      callback: function(val) { //Mandatory
-        startDatePickerCallback(val);
-      }
-    };
+      $scope.startDate = new Date();
+      $scope.checkEventData.startDate = $filter('date')($scope.startDate, "yyyy-MM-dd", "+0545");
 
-    $scope.startDate = new Date();
-    $scope.checkEventData.startDate = $filter('date')($scope.startDate, "yyyy-MM-dd", "+0545");
+      var startDatePickerCallback = function(val) {
+        if (typeof(val) === 'undefined') {
+          console.log('No date selected');
+        } else {
+          $scope.startDate = val;
+          $scope.checkEventData.startDate = $filter('date')($scope.startDate, "yyyy-MM-dd", "+0545");
+          console.log('Selected date is : ', val);
+        }
+      };
 
-    var startDatePickerCallback = function(val) {
-      if (typeof(val) === 'undefined') {
-        console.log('No date selected');
-      } else {
-        $scope.startDate = val;
-        $scope.checkEventData.startDate = $filter('date')($scope.startDate, "yyyy-MM-dd", "+0545");
-        console.log('Selected date is : ', val);
-      }
-    };
+      $scope.endDatepickerObject = {
+        titleLabel: 'Select Date', //Optional
+        todayLabel: 'Today', //Optional
+        closeLabel: 'Close', //Optional
+        setLabel: 'Set', //Optional
+        setButtonType: 'button-accent button-outline', //Optional
+        todayButtonType: 'button-accent button-outline', //Optional
+        closeButtonType: 'button-accent button-outline', //Optional
+        mondayFirst: true, //Optional
+        templateType: 'popup', //Optional
+        modalHeaderColor: 'bar-primary', //Optional
+        modalFooterColor: 'bar-primary', //Optional
+        callback: function(val) { //Mandatory
+          endDatePickerCallback(val);
+        }
+      };
 
-    $scope.endDatepickerObject = {
-      titleLabel: 'Select Date', //Optional
-      todayLabel: 'Today', //Optional
-      closeLabel: 'Close', //Optional
-      setLabel: 'Set', //Optional
-      setButtonType: 'button-accent button-outline', //Optional
-      todayButtonType: 'button-accent button-outline', //Optional
-      closeButtonType: 'button-accent button-outline', //Optional
-      mondayFirst: true, //Optional
-      templateType: 'popup', //Optional
-      modalHeaderColor: 'bar-primary', //Optional
-      modalFooterColor: 'bar-primary', //Optional
-      callback: function(val) { //Mandatory
-        endDatePickerCallback(val);
-      }
-    };
+      $scope.endDate = new Date();
+      $scope.checkEventData.endDate = $filter('date')($scope.endDate, "yyyy-MM-dd", "+0545");
 
-    $scope.endDate = new Date();
-    $scope.checkEventData.endDate = $filter('date')($scope.endDate, "yyyy-MM-dd", "+0545");
-
-    var endDatePickerCallback = function(val) {
-      if (typeof(val) === 'undefined') {
-        console.log('No date selected');
-      } else {
-        $scope.endDate = val;
-        $scope.checkEventData.endDate = $filter('date')($scope.endDate, "yyyy-MM-dd", "+0545");
-        console.log('Selected date is : ', val);
-      }
-    };
+      var endDatePickerCallback = function(val) {
+        if (typeof(val) === 'undefined') {
+          console.log('No date selected');
+        } else {
+          $scope.endDate = val;
+          $scope.checkEventData.endDate = $filter('date')($scope.endDate, "yyyy-MM-dd", "+0545");
+          console.log('Selected date is : ', val);
+        }
+      };
+    }, false);
   }
 ])
 
@@ -700,190 +718,222 @@ angular.module('beehrm.controllers', [])
   }
 ])
 
-.controller('ApplyLeaveCtrl', ['$scope', '$ionicModal', '$timeout', '$cordovaDialogs', '$ionicLoading', '$filter', 'All',
-  function($scope, $ionicModal, $timeout, $cordovaDialogs, $ionicLoading, $filter, All) {
+.controller('ApplyLeaveCtrl', ['$scope', '$rootScope', '$ionicModal', '$timeout', '$localStorage', '$cordovaNetwork', '$cordovaDialogs', '$ionicLoading', '$filter', 'All',
+  function($scope, $rootScope, $ionicModal, $timeout, $localStorage, $cordovaNetwork, $cordovaDialogs, $ionicLoading, $filter, All) {
+    document.addEventListener("deviceready", function() {
+      $scope.isOffline = $cordovaNetwork.isOffline();
+      $rootScope.$on('$cordovaNetwork:online', function(event, networkState) {
+        $scope.isOffline = false;
+      });
 
-    $scope.leaveDaysType = {
-      checked: false
-    };
-    $scope.endDateHide = false;
-    $scope.whichHalfShow = false;
+      $rootScope.$on('$cordovaNetwork:offline', function(event, networkState) {
+        $scope.isOffline = true;
+      });
 
-    $scope.expandText = function() {
-      var element = document.getElementById("txtnotes");
-      element.style.height = element.scrollHeight + "px";
-    };
+      $scope.leaveDaysType = {
+        checked: false
+      };
+      $scope.endDateHide = false;
+      $scope.whichHalfShow = false;
 
-    // Form data for the leave modal
-    $scope.leaveTypeOptions = [{
-      name: "Paid",
-      id: 1
-    }, {
-      name: "Unpaid",
-      id: 2
-    }];
-    $scope.halfTypeOptions = [{
-      name: "First Half",
-      id: 'F'
-    }, {
-      name: "Second Half",
-      id: 'S'
-    }];
-    $scope.leaveData = {
-      'leaveType': $scope.leaveTypeOptions[1],
-      'halfType': $scope.halfTypeOptions[0],
-      'subject': "",
-      'description': ""
-    };
-
-    $scope.leaveData.leave_days_type = 'F';
-
-    $scope.leaveDaysTypeChange = function() {
-      if ($scope.leaveData.leaveDaysType.checked === true) {
-        $scope.endDateHide = true;
-        $scope.whichHalfShow = true;
-        $scope.leaveData.leave_days_type = 'P';
+      $scope.expandText = function() {
+        var element = document.getElementById("txtnotes");
+        element.style.height = element.scrollHeight + "px";
+      };
+      if ($scope.isOffline && typeof $localStorage.leaveTypeOptions !== 'undefined') {
+        $scope.leaveTypeOptions = $localStorage.leaveTypeOptions;
+        setupLeaveApplyForm($scope.leaveTypeOptions);
       } else {
-        $scope.endDateHide = false;
-        $scope.whichHalfShow = false;
-        $scope.leaveData.leave_days_type = 'F';
-      }
-    };
+        $ionicLoading.show({
+          template: 'Loading...'
+        });
+        All.getLeaveTypes({}).success(function(res) {
+          console.log(res);
+          $localStorage.leaveTypeOptions = res;
+          $scope.leaveTypeOptions = res;
+          if ($scope.leaveTypeOptions.length > 0) {
+            setupLeaveApplyForm($scope.leaveTypeOptions);
+          } else {
+            $cordovaDialogs.alert('You cannot apply leave right now. Please contact app developers', 'Whoops', 'OK');
+          }
+          $ionicLoading.hide();
+        }).error(function(e) {
+          if (typeof $localStorage.leaveTypeOptions !== 'undefined') {
+            $scope.leaveTypeOptions = $localStorage.leaveTypeOptions;
+            setupLeaveApplyForm($scope.leaveTypeOptions);
+          } else {
+            $timeout(function() {
+              $ionicLoading.hide();
+              $cordovaDialogs.alert('Something went wrong', 'Whoops', 'OK');
+            }, 100);
+          }
 
-    // Create the leave modal that we will use later
-    $ionicModal.fromTemplateUrl('templates/dist/leave.apply.html', {
-      scope: $scope
-    }).then(function(modal) {
-      $scope.modal = modal;
-    });
-
-    // Triggered in the leave modal to close it
-    $scope.closeLeave = function() {
-      $scope.modal.hide();
-    };
-
-    // Open the leave modal
-    $scope.applyLeave = function() {
-      // $cordovaDialogs.alert('This section will be activated soon', 'Sorry :(', 'OK');
-      $scope.modal.show();
-    };
-
-    // Perform the leave action when the user submits the leave form
-    $scope.doLeave = function() {
-      if ($scope.leaveData.subject.length === 0) {
-        $cordovaDialogs.alert("Subject field is required", 'Whoops', 'OK');
-      } else if ($scope.leaveData.description.length === 0) {
-        $cordovaDialogs.alert("Description field is required", 'Whoops', 'OK');
-      } else {
-        $cordovaDialogs.confirm('Wanna submit?', 'BeeHRM', ['Yes', 'Cancel'])
-          .then(function(buttonIndex) {
-            if (buttonIndex == 1) {
-              $ionicLoading.show({
-                template: 'Loading...'
-              });
-              All.submitLeaveApplication({
-                leave_days_type: $scope.leaveData.leave_days_type,
-                subject: $scope.leaveData.subject,
-                leave_type: $scope.leaveData.leaveType.id,
-                leave_days_part: $scope.leaveData.halfType.id,
-                startdt: $scope.leaveData.startDate,
-                enddt: $scope.leaveData.endDate,
-                desc: $scope.leaveData.description
-              }).success(function(res) {
-                $timeout(function() {
-                  $ionicLoading.hide();
-                  $cordovaDialogs.alert(res, 'Success', 'OK')
-                    .then(function() {
-                      $scope.leaveData.leave_days_type = 'F';
-                      $scope.leaveData = {
-                        'leaveType': $scope.leaveTypeOptions[1],
-                        'halfType': $scope.halfTypeOptions[0],
-                        'subject': "",
-                        'description': "",
-                        'startDate': $scope.leaveData.startDate,
-                        'endDate': $scope.leaveData.startDate
-                      };
-                      $scope.modal.hide();
-                    });
-                }, 50);
-              }).error(function(e) {
-                $timeout(function() {
-                  $ionicLoading.hide();
-                  $cordovaDialogs.alert(e.message, 'Whoops', 'OK');
-                }, 1000);
-              });
-
-              // Simulate a leave delay. Remove this and replace with your leave
-              // code if using a leave system
-              // $timeout(function() {
-              //   // $scope.closeLeave();
-              //   $ionicLoading.hide();
-              // }, 1000);
-            }
-          });
+        });
       }
 
-    };
+    }, false);
 
-    $scope.startDatepickerObject = {
-      titleLabel: 'Select Date', //Optional
-      todayLabel: 'Today', //Optional
-      closeLabel: 'Close', //Optional
-      setLabel: 'Set', //Optional
-      setButtonType: 'button-accent button-outline', //Optional
-      todayButtonType: 'button-accent button-outline', //Optional
-      closeButtonType: 'button-accent button-outline', //Optional
-      mondayFirst: true, //Optional
-      templateType: 'popup', //Optional
-      modalHeaderColor: 'bar-primary', //Optional
-      modalFooterColor: 'bar-primary', //Optional
-      callback: function(val) { //Mandatory
-        startDatePickerCallback(val);
-      }
-    };
+    function setupLeaveApplyForm(leaveTypeOptions) {
+      $scope.halfTypeOptions = [{
+        name: "First Half",
+        id: 'F'
+      }, {
+        name: "Second Half",
+        id: 'S'
+      }];
+      $scope.leaveData = {
+        'leaveType': leaveTypeOptions[0],
+        'halfType': $scope.halfTypeOptions[0],
+        'subject': "",
+        'description': ""
+      };
 
-    $scope.startDate = new Date();
-    $scope.leaveData.startDate = $filter('date')($scope.startDate, "yyyy-MM-dd", "+0545");
+      $scope.leaveData.leave_days_type = 'F';
 
-    var startDatePickerCallback = function(val) {
-      if (typeof(val) === 'undefined') {
-        console.log('No date selected');
-      } else {
-        $scope.startDate = val;
-        $scope.leaveData.startDate = $filter('date')($scope.startDate, "yyyy-MM-dd", "+0545");
-        console.log('Selected date is : ', val);
-      }
-    };
+      $scope.leaveDaysTypeChange = function() {
+        if ($scope.leaveData.leaveDaysType.checked === true) {
+          $scope.endDateHide = true;
+          $scope.whichHalfShow = true;
+          $scope.leaveData.leave_days_type = 'P';
+        } else {
+          $scope.endDateHide = false;
+          $scope.whichHalfShow = false;
+          $scope.leaveData.leave_days_type = 'F';
+        }
+      };
 
-    $scope.endDatepickerObject = {
-      titleLabel: 'Select Date', //Optional
-      todayLabel: 'Today', //Optional
-      closeLabel: 'Close', //Optional
-      setLabel: 'Set', //Optional
-      setButtonType: 'button-accent button-outline', //Optional
-      todayButtonType: 'button-accent button-outline', //Optional
-      closeButtonType: 'button-accent button-outline', //Optional
-      mondayFirst: true, //Optional
-      templateType: 'popup', //Optional
-      modalHeaderColor: 'bar-primary', //Optional
-      modalFooterColor: 'bar-primary', //Optional
-      callback: function(val) { //Mandatory
-        endDatePickerCallback(val);
-      }
-    };
+      // Create the leave modal that we will use later
+      $ionicModal.fromTemplateUrl('templates/dist/leave.apply.html', {
+        scope: $scope
+      }).then(function(modal) {
+        $scope.modal = modal;
+      });
 
-    $scope.endDate = new Date();
-    $scope.leaveData.endDate = $filter('date')($scope.endDate, "yyyy-MM-dd", "+0545");
+      // Triggered in the leave modal to close it
+      $scope.closeLeave = function() {
+        $scope.modal.hide();
+      };
 
-    var endDatePickerCallback = function(val) {
-      if (typeof(val) === 'undefined') {
-        console.log('No date selected');
-      } else {
-        $scope.endDate = val;
-        $scope.leaveData.endDate = $filter('date')($scope.endDate, "yyyy-MM-dd", "+0545");
-        console.log('Selected date is : ', val);
-      }
-    };
+      // Open the leave modal
+      $scope.applyLeave = function() {
+        // $cordovaDialogs.alert('This section will be activated soon', 'Sorry :(', 'OK');
+        $scope.modal.show();
+      };
+
+      // Perform the leave action when the user submits the leave form
+      $scope.doLeave = function() {
+        if ($scope.leaveData.subject.length === 0) {
+          $cordovaDialogs.alert("Subject field is required", 'Whoops', 'OK');
+        } else if ($scope.leaveData.description.length === 0) {
+          $cordovaDialogs.alert("Description field is required", 'Whoops', 'OK');
+        } else {
+          $cordovaDialogs.confirm('Wanna submit?', 'BeeHRM', ['Yes', 'Cancel'])
+            .then(function(buttonIndex) {
+              if (buttonIndex == 1) {
+                $ionicLoading.show({
+                  template: 'Loading...'
+                });
+                if ($scope.isOffline === false) {
+                  All.submitLeaveApplication({
+                    leave_days_type: $scope.leaveData.leave_days_type,
+                    subject: $scope.leaveData.subject,
+                    leave_type: $scope.leaveData.leaveType.leavetype_id,
+                    leave_days_part: $scope.leaveData.halfType.id,
+                    startdt: $scope.leaveData.startDate,
+                    enddt: $scope.leaveData.endDate,
+                    desc: $scope.leaveData.description
+                  }).success(function(res) {
+                    $timeout(function() {
+                      $ionicLoading.hide();
+                      $cordovaDialogs.alert(res, 'Success', 'OK')
+                        .then(function() {
+                          $scope.leaveData.leave_days_type = 'F';
+                          $scope.leaveData = {
+                            'leaveType': leaveTypeOptions[0],
+                            'halfType': $scope.halfTypeOptions[0],
+                            'subject': "",
+                            'description': "",
+                            'startDate': $scope.leaveData.startDate,
+                            'endDate': $scope.leaveData.startDate
+                          };
+                          $scope.modal.hide();
+                        });
+                    }, 50);
+                  }).error(function(e) {
+                    $timeout(function() {
+                      $ionicLoading.hide();
+                      $cordovaDialogs.alert(e.message, 'Whoops', 'OK');
+                    }, 1000);
+                  });
+                } else {
+                  $cordovaDialogs.alert('Please check your internet connection', 'Whoops', 'OK');
+                }
+              }
+            });
+        }
+
+      };
+
+      $scope.startDatepickerObject = {
+        titleLabel: 'Select Date', //Optional
+        todayLabel: 'Today', //Optional
+        closeLabel: 'Close', //Optional
+        setLabel: 'Set', //Optional
+        setButtonType: 'button-accent button-outline', //Optional
+        todayButtonType: 'button-accent button-outline', //Optional
+        closeButtonType: 'button-accent button-outline', //Optional
+        mondayFirst: true, //Optional
+        templateType: 'popup', //Optional
+        modalHeaderColor: 'bar-primary', //Optional
+        modalFooterColor: 'bar-primary', //Optional
+        callback: function(val) { //Mandatory
+          startDatePickerCallback(val);
+        }
+      };
+
+      $scope.startDate = new Date();
+      $scope.leaveData.startDate = $filter('date')($scope.startDate, "yyyy-MM-dd", "+0545");
+
+      var startDatePickerCallback = function(val) {
+        if (typeof(val) === 'undefined') {
+          console.log('No date selected');
+        } else {
+          $scope.startDate = val;
+          $scope.leaveData.startDate = $filter('date')($scope.startDate, "yyyy-MM-dd", "+0545");
+          console.log('Selected date is : ', val);
+        }
+      };
+
+      $scope.endDatepickerObject = {
+        titleLabel: 'Select Date', //Optional
+        todayLabel: 'Today', //Optional
+        closeLabel: 'Close', //Optional
+        setLabel: 'Set', //Optional
+        setButtonType: 'button-accent button-outline', //Optional
+        todayButtonType: 'button-accent button-outline', //Optional
+        closeButtonType: 'button-accent button-outline', //Optional
+        mondayFirst: true, //Optional
+        templateType: 'popup', //Optional
+        modalHeaderColor: 'bar-primary', //Optional
+        modalFooterColor: 'bar-primary', //Optional
+        callback: function(val) { //Mandatory
+          endDatePickerCallback(val);
+        }
+      };
+
+      $scope.endDate = new Date();
+      $scope.leaveData.endDate = $filter('date')($scope.endDate, "yyyy-MM-dd", "+0545");
+
+      var endDatePickerCallback = function(val) {
+        if (typeof(val) === 'undefined') {
+          console.log('No date selected');
+        } else {
+          $scope.endDate = val;
+          $scope.leaveData.endDate = $filter('date')($scope.endDate, "yyyy-MM-dd", "+0545");
+          console.log('Selected date is : ', val);
+        }
+      };
+    }
   }
 ])
 

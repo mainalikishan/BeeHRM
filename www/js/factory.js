@@ -95,7 +95,18 @@ angular.module('beehrm.factories', [])
     leaveApplication: function(input) {
       var include = (typeof input[0] == 'undefined') ? '' : input[0];
       return $http({
-        url: $localStorage.accessData.org_app_url + '/leave-application/?'+include,
+        url: $localStorage.accessData.org_app_url + '/leave-application/?' + include,
+        method: 'GET',
+        dataType: 'json',
+        headers: {
+          "Content-Type": "application/x.vdn.v1+json",
+          "Authorization": "bearer " + $localStorage.token
+        }
+      });
+    },
+    getLeaveTypes: function(input) {
+      return $http({
+        url: $localStorage.accessData.org_app_url + '/leave-application/get-leave-types',
         method: 'GET',
         dataType: 'json',
         headers: {
@@ -137,10 +148,21 @@ angular.module('beehrm.factories', [])
         }
       });
     },
+    submitLeaveApplication: function(input) {
+      return $http({
+        url: $localStorage.accessData.org_app_url + '/leave-application',
+        method: 'POST',
+        dataType: 'json',
+        data: input,
+        headers: {
+          "Content-Type": "application/x.vdn.v1+json"
+        }
+      });
+    },
     checkLeaveApplication: function(input) {
       var include = (typeof input[0] == 'undefined') ? '' : input[0];
       return $http({
-        url: $localStorage.accessData.org_app_url + '/events?'+include,
+        url: $localStorage.accessData.org_app_url + '/events?' + include,
         method: 'GET',
         dataType: 'json',
         data: input,
