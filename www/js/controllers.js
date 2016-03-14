@@ -116,6 +116,10 @@ angular.module('beehrm.controllers', [])
             });
         };
 
+        $scope.checkIn = function() {
+          $cordovaDialogs.alert('This section will be activated soon', 'Sorry :(', 'OK');
+        };
+
       }, false);
 
     }
@@ -303,10 +307,6 @@ angular.module('beehrm.controllers', [])
         });
       }
     }
-
-    $scope.checkIn = function() {
-      $cordovaDialogs.alert('This section will be activated soon', 'Sorry :(', 'OK');
-    };
   }
 ])
 
@@ -721,6 +721,7 @@ angular.module('beehrm.controllers', [])
 .controller('ApplyLeaveCtrl', ['$scope', '$rootScope', '$ionicModal', '$timeout', '$localStorage', '$cordovaNetwork', '$cordovaDialogs', '$ionicLoading', '$filter', 'All',
   function($scope, $rootScope, $ionicModal, $timeout, $localStorage, $cordovaNetwork, $cordovaDialogs, $ionicLoading, $filter, All) {
     document.addEventListener("deviceready", function() {
+      $localStorage.disableApplyLeave = true;
       $scope.isOffline = $cordovaNetwork.isOffline();
       $rootScope.$on('$cordovaNetwork:online', function(event, networkState) {
         $scope.isOffline = false;
@@ -740,35 +741,39 @@ angular.module('beehrm.controllers', [])
         var element = document.getElementById("txtnotes");
         element.style.height = element.scrollHeight + "px";
       };
-      if ($scope.isOffline && typeof $localStorage.leaveTypeOptions !== 'undefined') {
-        $scope.leaveTypeOptions = $localStorage.leaveTypeOptions;
-        setupLeaveApplyForm($scope.leaveTypeOptions);
-      } else {
-        $ionicLoading.show({
-          template: 'Loading...'
-        });
-        All.getLeaveTypes({}).success(function(res) {
-          console.log(res);
-          $localStorage.leaveTypeOptions = res;
-          $scope.leaveTypeOptions = res;
-          if ($scope.leaveTypeOptions.length > 0) {
-            setupLeaveApplyForm($scope.leaveTypeOptions);
-          } else {
-            $cordovaDialogs.alert('You cannot apply leave right now. Please contact app developers', 'Whoops', 'OK');
-          }
-          $ionicLoading.hide();
-        }).error(function(e) {
-          if (typeof $localStorage.leaveTypeOptions !== 'undefined') {
-            $scope.leaveTypeOptions = $localStorage.leaveTypeOptions;
-            setupLeaveApplyForm($scope.leaveTypeOptions);
-          } else {
-            $timeout(function() {
-              $ionicLoading.hide();
-              $cordovaDialogs.alert('Something went wrong', 'Whoops', 'OK');
-            }, 100);
-          }
+      if (typeof $localStorage.accessData !== 'undefined') {
+        if ($scope.isOffline && typeof $localStorage.leaveTypeOptions !== 'undefined') {
+          $scope.leaveTypeOptions = $localStorage.leaveTypeOptions;
+          setupLeaveApplyForm($scope.leaveTypeOptions);
+          $localStorage.disableApplyLeave = false;
+        } else {
+          $ionicLoading.show({
+            template: 'Loading...'
+          });
+          All.getLeaveTypes({}).success(function(res) {
+            $localStorage.leaveTypeOptions = res.data;
+            $scope.leaveTypeOptions = res.data;
+            if (typeof $scope.leaveTypeOptions !== 'undefined' && $scope.leaveTypeOptions.length > 0) {
+              setupLeaveApplyForm($scope.leaveTypeOptions);
+              $localStorage.disableApplyLeave = false;
+            } else {
+              setupLeaveApplyForm([]);
+            }
+            $ionicLoading.hide();
+          }).error(function(e) {
+            if (typeof $localStorage.leaveTypeOptions !== 'undefined') {
+              $scope.leaveTypeOptions = $localStorage.leaveTypeOptions;
+              setupLeaveApplyForm($scope.leaveTypeOptions);
+              $localStorage.disableApplyLeave = false;
+            } else {
+              $timeout(function() {
+                $localStorage.disableApplyLeave = true;
+                $ionicLoading.hide();
+              }, 100);
+            }
 
-        });
+          });
+        }
       }
 
     }, false);
@@ -816,8 +821,11 @@ angular.module('beehrm.controllers', [])
 
       // Open the leave modal
       $scope.applyLeave = function() {
-        // $cordovaDialogs.alert('This section will be activated soon', 'Sorry :(', 'OK');
-        $scope.modal.show();
+        if ($localStorage.disableApplyLeave === false) {
+          $scope.modal.show();
+        } else {
+          $cordovaDialogs.alert('You cannot apply leave right now. Please contact HR department', 'Whoops', 'OK');
+        }
       };
 
       // Perform the leave action when the user submits the leave form
@@ -837,7 +845,7 @@ angular.module('beehrm.controllers', [])
                   All.submitLeaveApplication({
                     leave_days_type: $scope.leaveData.leave_days_type,
                     subject: $scope.leaveData.subject,
-                    leave_type: $scope.leaveData.leaveType.leavetype_id,
+                    leave_type: $scope.leaveData.leaveType.id,
                     leave_days_part: $scope.leaveData.halfType.id,
                     startdt: $scope.leaveData.startDate,
                     enddt: $scope.leaveData.endDate,
