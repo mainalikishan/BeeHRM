@@ -26,8 +26,9 @@ angular.module('beehrm.controllers', [])
           $scope.isOnline = false;
         });
 
-        if (typeof $localStorage.token !== 'undefined') {
+        if (typeof $localStorage.userInfo !== 'undefined') {
           $rootScope.userInfo = $localStorage.userInfo;
+          $rootScope.userInfo.image = ($localStorage.userInfo.image === 'data:image/png;base64,') ? 'img/profile_avatar.png' : $localStorage.userInfo.image;
           if (typeof $localStorage.deviceTokenRegistered == 'undefined') {
             Auth.deviceToken({
               deviceToken: $localStorage.deviceToken._token
@@ -255,7 +256,7 @@ angular.module('beehrm.controllers', [])
         $scope.isOffline = true;
       });
 
-      if (typeof $localStorage.token !== 'undefined') {
+      if (typeof $localStorage.userInfo !== 'undefined') {
         if ($scope.isOffline) {
           $rootScope.bulletinBoard = $localStorage.bulletinBoard;
         } else {
@@ -268,6 +269,7 @@ angular.module('beehrm.controllers', [])
               delete res.data.notifications;
               $localStorage.userInfo = res.data;
               $rootScope.userInfo = $localStorage.userInfo;
+              $rootScope.userInfo.image = ($localStorage.userInfo.image === 'data:image/png;base64,') ? 'img/profile_avatar.png' : $localStorage.userInfo.image;
             }).error(function(e) {
               $timeout(function() {
                 $ionicLoading.hide();
@@ -276,6 +278,7 @@ angular.module('beehrm.controllers', [])
             });
           } else {
             $rootScope.userInfo = $localStorage.userInfo;
+            $rootScope.userInfo.image = ($localStorage.userInfo.image === 'data:image/png;base64,') ? 'img/profile_avatar.png' : $localStorage.userInfo.image;
           }
           getBulletin();
         }
@@ -334,69 +337,140 @@ angular.module('beehrm.controllers', [])
   }
 ])
 
-.controller('EventsCtrl', ['$scope', function($scope) {
+.controller('EventsCtrl', ['$scope', '$timeout', '$localStorage', '$ionicLoading',
+  function($scope, $timeout, $localStorage, $ionicLoading) {
+    $timeout(function() {
+      if (typeof $localStorage.events !== 'undefined') {
+        $scope.events = $localStorage.events;
+      } else {
+        $ionicLoading.hide();
+        $state.go('app.dashboard');
+      }
+      $ionicLoading.hide();
+    }, 1000);
+  }
+])
 
-  $scope.items = [{
-    title: 'बाबुको मुख हेर्ने दिन - भाद्र २७, आइतवार',
-    day: '13',
-    month: 'Sep',
-    id: 1
-  }, {
-    title: 'दर खाने - भाद्र २९, मङ्गलवार',
-    status: 'P',
-    day: '15',
-    month: 'Sep',
-    id: 2
-  }, {
-    title: 'ऋषिपञ्चमी व्रत - आश्विन १, शुक्रवार',
-    status: 'A',
-    day: '18',
-    month: 'Sep',
-    id: 3
-  }, {
-    title: 'घटस्थापना - आश्विन २६, मङ्गलवार',
-    status: 'A',
-    day: '13',
-    month: 'Oct',
-    id: 4
-  }, {
-    title: 'फूलपाती - कार्तिक ३, मङ्गलवार',
-    status: 'A',
-    day: '20',
-    month: 'Oct',
-    id: 5
-  }, {
-    title: 'कालरात्री - कार्तिक ४, बुधवार',
-    status: 'R',
-    day: '21',
-    month: 'Oct',
-    id: 6
-  }, {
-    title: 'महाअष्टमी - कार्तिक ४, बुधवार',
-    status: 'A',
-    day: '22',
-    month: 'Oct',
-    id: 7
-  }, {
-    title: 'विजया दशमी - कार्तिक ५, बिहिवार',
-    status: 'R',
-    day: '22',
-    month: 'Oct',
-    id: 8
-  }, {
-    title: 'काग तिहार - कार्तिक २३, सोमवार',
-    status: 'A',
-    day: '09',
-    month: 'Nov',
-    id: 9
-  }, {
-    title: 'कुकुर तिहार - कार्तिक २४, मङ्गलवार',
-    status: 'A',
-    day: '10',
-    month: 'Nov',
-    id: 10
-  }];
-}])
+.controller('CheckEventCtrl', ['$scope', '$ionicModal', '$timeout', '$cordovaDialogs', '$localStorage', '$ionicLoading', '$filter', '$state', 'All',
+  function($scope, $ionicModal, $timeout, $cordovaDialogs, $localStorage, $ionicLoading, $filter, $state, All) {
+
+    $scope.checkEventData = {};
+
+    // Create the leave modal that we will use later
+    $ionicModal.fromTemplateUrl('templates/dist/events.check.html', {
+      scope: $scope
+    }).then(function(modal) {
+      $scope.modal = modal;
+    });
+
+    // Triggered in the leave modal to close it
+    $scope.closeCheckEvent = function() {
+      $scope.modal.hide();
+    };
+
+    // Open the leave modal
+    $scope.openCheckEvent = function() {
+      // $cordovaDialogs.alert('This section will be activated soon', 'Sorry :(', 'OK');
+      $scope.modal.show();
+    };
+
+    // Perform the leave action when the user submits the leave form
+    $scope.checkEvents = function() {
+      $ionicLoading.show({
+        template: 'Loading...'
+      });
+      All.checkLeaveApplication({
+        0: 'from=' + $scope.checkEventData.startDate + '&to=' + $scope.checkEventData.endDate
+      }).success(function(res) {
+        $timeout(function() {
+          $ionicLoading.hide();
+          if (res.data.length === 0) {
+            $cordovaDialogs.alert('No events found in given dates', 'BeeHRM', 'OK')
+              .then(function() {
+                $scope.checkEventData = {
+                  'startDate': $scope.checkEventData.startDate,
+                  'endDate': $scope.checkEventData.startDate
+                };
+              });
+          } else {
+            $ionicLoading.show({
+              template: 'Loading...'
+            });
+            $localStorage.events = res.data;
+            $scope.modal.hide();
+            $state.go('app.events');
+          }
+
+        }, 50);
+      }).error(function(e) {
+        $timeout(function() {
+          $ionicLoading.hide();
+          $cordovaDialogs.alert(e.message, 'Whoops', 'OK');
+        }, 1000);
+      });
+    };
+
+    $scope.startDatepickerObject = {
+      titleLabel: 'Select Date', //Optional
+      todayLabel: 'Today', //Optional
+      closeLabel: 'Close', //Optional
+      setLabel: 'Set', //Optional
+      setButtonType: 'button-accent button-outline', //Optional
+      todayButtonType: 'button-accent button-outline', //Optional
+      closeButtonType: 'button-accent button-outline', //Optional
+      mondayFirst: true, //Optional
+      templateType: 'popup', //Optional
+      modalHeaderColor: 'bar-primary', //Optional
+      modalFooterColor: 'bar-primary', //Optional
+      callback: function(val) { //Mandatory
+        startDatePickerCallback(val);
+      }
+    };
+
+    $scope.startDate = new Date();
+    $scope.checkEventData.startDate = $filter('date')($scope.startDate, "yyyy-MM-dd", "+0545");
+
+    var startDatePickerCallback = function(val) {
+      if (typeof(val) === 'undefined') {
+        console.log('No date selected');
+      } else {
+        $scope.startDate = val;
+        $scope.checkEventData.startDate = $filter('date')($scope.startDate, "yyyy-MM-dd", "+0545");
+        console.log('Selected date is : ', val);
+      }
+    };
+
+    $scope.endDatepickerObject = {
+      titleLabel: 'Select Date', //Optional
+      todayLabel: 'Today', //Optional
+      closeLabel: 'Close', //Optional
+      setLabel: 'Set', //Optional
+      setButtonType: 'button-accent button-outline', //Optional
+      todayButtonType: 'button-accent button-outline', //Optional
+      closeButtonType: 'button-accent button-outline', //Optional
+      mondayFirst: true, //Optional
+      templateType: 'popup', //Optional
+      modalHeaderColor: 'bar-primary', //Optional
+      modalFooterColor: 'bar-primary', //Optional
+      callback: function(val) { //Mandatory
+        endDatePickerCallback(val);
+      }
+    };
+
+    $scope.endDate = new Date();
+    $scope.checkEventData.endDate = $filter('date')($scope.endDate, "yyyy-MM-dd", "+0545");
+
+    var endDatePickerCallback = function(val) {
+      if (typeof(val) === 'undefined') {
+        console.log('No date selected');
+      } else {
+        $scope.endDate = val;
+        $scope.checkEventData.endDate = $filter('date')($scope.endDate, "yyyy-MM-dd", "+0545");
+        console.log('Selected date is : ', val);
+      }
+    };
+  }
+])
 
 .controller('LeavesCtrl', ['$scope', '$rootScope', '$state', '$localStorage', '$timeout', '$cordovaNetwork', '$ionicLoading', '$cordovaDialogs', 'All',
   function($scope, $rootScope, $state, $localStorage, $timeout, $cordovaNetwork, $ionicLoading, $cordovaDialogs, All) {
@@ -531,9 +605,59 @@ angular.module('beehrm.controllers', [])
           });
       } else {
         $scope.leaveDetails = hasDetails;
+        $scope.leaveDetails.approver_photo = ($scope.leaveDetails.approver_photo === 'data:image/png;base64,') ? 'img/avatar.jpg' : $scope.leaveDetails.approver_photo;
         $scope.leaveShow = true;
       }
     }, 1000);
+  }
+])
+
+.controller('LeavesBalanceCtrl', ['$scope', '$rootScope', '$timeout', '$localStorage', '$ionicLoading', '$cordovaDialogs', '$cordovaNetwork', 'All', 'Me',
+  function($scope, $rootScope, $timeout, $localStorage, $ionicLoading, $cordovaDialogs, $cordovaNetwork, All, Me) {
+    $scope.isOffline = true;
+    document.addEventListener("deviceready", function() {
+      $scope.isOffline = $cordovaNetwork.isOffline();
+      $rootScope.$on('$cordovaNetwork:online', function(event, networkState) {
+        $scope.isOffline = false;
+        if (typeof $localStorage.token !== 'undefined') {
+          $ionicLoading.show({
+            template: 'Syncing data...'
+          });
+          getLeavebalance();
+        }
+      });
+
+      $rootScope.$on('$cordovaNetwork:offline', function(event, networkState) {
+        $scope.isOffline = true;
+      });
+
+      if (typeof $localStorage.token !== 'undefined') {
+        if ($scope.isOffline) {
+          $scope.leaveBalance = $localStorage.leaveBalance;
+        } else {
+          getLeavebalance();
+        }
+      }
+
+    }, false);
+
+    function getLeavebalance() {
+      if (typeof $localStorage.accessData !== 'undefined') {
+        $ionicLoading.show({
+          template: 'Loading...'
+        });
+        All.leaveBalance({}).success(function(res) {
+          $localStorage.leaveBalance = res.data;
+          $scope.leaveBalance = res.data;
+          $ionicLoading.hide();
+        }).error(function(e) {
+          $timeout(function() {
+            $ionicLoading.hide();
+            $cordovaDialogs.alert(e.message, 'Whoops', 'OK');
+          }, 1000);
+        });
+      }
+    }
   }
 ])
 

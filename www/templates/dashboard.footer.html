@@ -1,17 +1,17 @@
-<div ng-controller="DashboardCtrl">
-    <footer class="bar bar-footer bar-accent has-tabs" ng-click="checkIn()" ng-show="$root.showFooter">
-        <h3 class="title">CHECK IN</h3>
-    </footer>
-    <ion-tabs class="tabs-primary tabs-icon-only" ng-show="$root.showTabs">
-        <ion-tab title="Home" icon-on="ion-ios-speedometer" icon-off="ion-ios-speedometer-outline" href="#/app/dashboard">
-            <!-- Tab 1 content -->
-        </ion-tab>
-        <ion-tab title="Events" icon-on="ion-ios-calendar" icon-off="ion-ios-calendar-outline" ng-click="checkIn()">
-            <!-- Tab 2 content href="#/app/events" -->
-        </ion-tab>
-        <ion-tab title="Notifications" icon-on="ion-ios-bell" icon-off="ion-ios-bell-outline" href="#/app/notifications">
-            <!-- Tab 3 content -->
-        </ion-tab>
-        <!-- <div class="badge badge-accent">2</div> -->
-    </ion-tabs>
-</div>
+<footer class="bar bar-footer bar-accent has-tabs" ng-click="checkIn()" ng-show="$root.showFooter">
+    <h3 class="title">CHECK IN</h3>
+</footer>
+<ion-tabs class="tabs-primary tabs-icon-only" ng-show="$root.showTabs">
+    <ion-tab title="Home" icon-on="ion-ios-speedometer" icon-off="ion-ios-speedometer-outline" href="#/app/dashboard">
+        <!-- Tab 1 content -->
+    </ion-tab>
+    <div ng-controller="CheckEventCtrl">
+      <ion-tab title="Events" icon-on="ion-ios-calendar" icon-off="ion-ios-calendar-outline"  ng-click="openCheckEvent()">
+          <!-- Tab 2 content href="#/app/events" -->
+      </ion-tab>
+    </div>
+    <ion-tab title="Notifications" icon-on="ion-ios-bell" icon-off="ion-ios-bell-outline" href="#/app/notifications">
+        <!-- Tab 3 content -->
+    </ion-tab>
+    <!-- <div class="badge badge-accent">2</div> -->
+</ion-tabs>

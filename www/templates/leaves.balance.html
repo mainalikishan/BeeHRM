@@ -1,90 +1,21 @@
-<ion-view view-title="Leave Balance"
-transitiontype="slide" direction="right" go-native 
-show-leave-tabs>
-    <ion-content class="detail-page">
-        <div class="list" style="margin-bottom: 0px">
-            <div class="item item-divider">
-                Annual Leave
-            </div>
-            <div class="item">
-                Entitlement <span class="badge badge-accent">10</span>
-            </div>
-            <div class="item">
-                Leave Taken <span class="badge badge-accent">2</span>
-            </div>
-            <div class="item">
-                Balance <span class="badge badge-accent">8</span>
-            </div>
-        </div>
-        <div class="list" style="margin-bottom: 0px">
-            <div class="item item-divider">
-                Casual Leave
-            </div>
-            <div class="item">
-                Entitlement <span class="badge badge-accent">5</span>
-            </div>
-            <div class="item">
-                Leave Taken <span class="badge badge-accent">0</span>
-            </div>
-            <div class="item">
-                Balance <span class="badge badge-accent">5</span>
-            </div>
-        </div>
-        <div class="list" style="margin-bottom: 0px">
-            <div class="item item-divider">
-                Sick Leave
-            </div>
-            <div class="item">
-                Entitlement <span class="badge badge-accent">5</span>
-            </div>
-            <div class="item">
-                Leave Taken <span class="badge badge-accent">0</span>
-            </div>
-            <div class="item">
-                Balance <span class="badge badge-accent">5</span>
-            </div>
-        </div>
-        <div class="list" style="margin-bottom: 0px">
-            <div class="item item-divider">
-                Mourning Leave
-            </div>
-            <div class="item">
-                Entitlement <span class="badge badge-accent">5</span>
-            </div>
-            <div class="item">
-                Leave Taken <span class="badge badge-accent">0</span>
-            </div>
-            <div class="item">
-                Balance <span class="badge badge-accent">5</span>
-            </div>
-        </div>
-        <div class="list" style="margin-bottom: 0px">
-            <div class="item item-divider">
-                Paternity Leave
-            </div>
-            <div class="item">
-                Entitlement <span class="badge badge-accent">5</span>
-            </div>
-            <div class="item">
-                Leave Taken <span class="badge badge-accent">0</span>
-            </div>
-            <div class="item">
-                Balance <span class="badge badge-accent">5</span>
-            </div>
-        </div>
-        <div class="list" style="margin-bottom: 0px">
-            <div class="item item-divider">
-                Maternity Leave
-            </div>
-            <div class="item">
-                Entitlement <span class="badge badge-accent">5</span>
-            </div>
-            <div class="item">
-                Leave Taken <span class="badge badge-accent">0</span>
-            </div>
-            <div class="item">
-                Balance <span class="badge badge-accent">5</span>
-            </div>
-        </div>
-    </ion-content>
+<ion-view view-title="Leave Balance" transitiontype="slide" direction="right" go-native show-leave-tabs>
+  <ion-content class="detail-page has-tabs">
+    <ion-list ng-repeat="list in leaveBalance">
+      <ion-item class="item-divider">
+        {{ list.label }}
+      </ion-item>
+      <ion-item>
+        Entitlement
+        <span class="badge badge-accent">{{ list.days }}</span>
+      </ion-item>
+      <ion-item>
+        Leave Taken
+        <span class="badge badge-accent">{{ (list.days) - (list.balance) }}</span>
+      </ion-item>
+      <ion-item>
+        Balance
+        <span class="badge badge-accent">{{ list.balance }}</span>
+      </ion-item>
+    </ion-list>
+  </ion-content>
 </ion-view>

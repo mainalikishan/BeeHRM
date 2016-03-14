@@ -1,0 +1,29 @@
+<ion-modal-view>
+  <form>
+    <ion-header-bar>
+      <h1 class="title">Check Events</h1>
+      <div class="buttons">
+        <button class="button button-clear" ng-click="closeCheckEvent()">Close</button>
+      </div>
+    </ion-header-bar>
+    <ion-content>
+      <div class="list">
+        <ionic-datepicker input-obj="startDatepickerObject">
+          <div class="item" href="#">
+            Start Date
+            <span class="item-note">{{startDate | date:'yyyy-MM-dd'}}</span>
+          </div>
+        </ionic-datepicker>
+        <ionic-datepicker input-obj="endDatepickerObject" ng-hide="endDateHide">
+          <div class="item" href="#">
+            End Date
+            <span class="item-note">{{endDate | date:'yyyy-MM-dd'}}</span>
+          </div>
+        </ionic-datepicker>
+      </div>
+    </ion-content>
+    <ion-footer-bar align-title="left" class="bar-accent" ng-click="checkEvents()">
+      <h3 class="title">Check</h3>
+    </ion-footer-bar>
+  </form>
+</ion-modal-view>

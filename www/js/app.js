@@ -134,7 +134,8 @@ angular.module('beehrm', ['ionic', 'ionic.service.core', 'ngCordova', 'ngStorage
     url: '/leaves-balance',
     views: {
       'menuContent': {
-        templateUrl: 'templates/dist/leaves.balance.html'
+        templateUrl: 'templates/dist/leaves.balance.html',
+        controller: 'LeavesBalanceCtrl'
       }
     }
   })

@@ -8,6 +8,7 @@ var rename = require('gulp-rename');
 var sh = require('shelljs');
 var uglify = require('gulp-uglifyjs');
 var htmlmin = require('gulp-htmlmin');
+var stripDebug = require('gulp-strip-debug');
 
 
 var paths = {
@@ -33,7 +34,7 @@ gulp.task('sass', function(done) {
 });
 
 gulp.task('watch', function() {
-  gulp.watch(paths.sass, ['sass', 'jsplugins']);
+  gulp.watch(paths.sass, ['sass', 'jsplugins', 'jsApp', 'minifyHTML']);
 });
 
 gulp.task('install', ['git-check'], function() {
@@ -77,6 +78,7 @@ gulp.task('jsApp', function() {
         'www/js/directive.js',
         'www/js/controllers.js'
       ])
+    // .pipe(stripDebug())
     .pipe(uglify('beehrm.min.js', {
       mangle: true,
       output: {
@@ -94,7 +96,13 @@ gulp.task('jsAll', function() {
         'www/lib/beehrm/plugins.min.js',
         'www/js/beehrm.min.js'
       ])
-    .pipe(concat('beehrm.min.js'))
+    // .pipe(concat('beehrm.min.js'))
+    .pipe(uglify('beehrm.min.js', {
+      mangle: true,
+      output: {
+        beautify: false
+      }
+    }))
     .pipe(gulp.dest('www/lib/beehrm'))
 });
 

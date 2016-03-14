@@ -104,6 +104,17 @@ angular.module('beehrm.factories', [])
         }
       });
     },
+    leaveBalance: function(input) {
+      return $http({
+        url: $localStorage.accessData.org_app_url + '/leave-balance',
+        method: 'GET',
+        dataType: 'json',
+        headers: {
+          "Content-Type": "application/x.vdn.v1+json",
+          "Authorization": "bearer " + $localStorage.token
+        }
+      });
+    },
     bulletinBoard: function(input) {
       return $http({
         url: $localStorage.accessData.org_app_url + '/bulletin-board',
@@ -115,10 +126,22 @@ angular.module('beehrm.factories', [])
         }
       });
     },
-    submitLeaveApplication: function(input) {
+    events: function(input) {
       return $http({
-        url: $localStorage.accessData.org_app_url + '/leave-application',
-        method: 'POST',
+        url: $localStorage.accessData.org_app_url + '/events',
+        method: 'GET',
+        dataType: 'json',
+        headers: {
+          "Content-Type": "application/x.vdn.v1+json",
+          "Authorization": "bearer " + $localStorage.token
+        }
+      });
+    },
+    checkLeaveApplication: function(input) {
+      var include = (typeof input[0] == 'undefined') ? '' : input[0];
+      return $http({
+        url: $localStorage.accessData.org_app_url + '/events?'+include,
+        method: 'GET',
         dataType: 'json',
         data: input,
         headers: {
