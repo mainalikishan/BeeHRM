@@ -1,5 +1,5 @@
-<footer class="bar bar-footer bar-accent has-tabs" ng-click="checkIn()" ng-show="$root.showFooter">
-    <h3 class="title">CHECK IN</h3>
+<footer class="bar bar-footer bar-accent has-tabs" ng-click="checkIn({{ checkInOutLabel }})" ng-show="$root.showFooter">
+    <h3 class="title">{{ checkInOutLabel }}</h3>
 </footer>
 <ion-tabs class="tabs-primary tabs-icon-only" ng-show="$root.showTabs">
     <ion-tab title="Home" icon-on="ion-ios-speedometer" icon-off="ion-ios-speedometer-outline" href="#/app/dashboard">

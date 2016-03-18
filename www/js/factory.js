@@ -92,6 +92,30 @@ angular.module('beehrm.factories', [])
 
 .factory('All', ['$http', '$localStorage', 'urls', function($http, $localStorage, urls) {
   return {
+    checkInOut: function(input) {
+      var include = (typeof input[0] == 'undefined') ? '' : input[0];
+      return $http({
+        url: $localStorage.accessData.org_app_url + '/check-in-out/?' + include,
+        method: 'GET',
+        dataType: 'json',
+        headers: {
+          "Content-Type": "application/x.vdn.v1+json",
+          "Authorization": "bearer " + $localStorage.token
+        }
+      });
+    },
+    checkInOutRegister: function(input) {
+      return $http({
+        url: $localStorage.accessData.org_app_url + '/check-in-out/register',
+        method: 'POST',
+        dataType: 'json',
+        data: input,
+        headers: {
+          "Content-Type": "application/x.vdn.v1+json",
+          "Authorization": "bearer " + $localStorage.token
+        }
+      });
+    },
     leaveApplication: function(input) {
       var include = (typeof input[0] == 'undefined') ? '' : input[0];
       return $http({

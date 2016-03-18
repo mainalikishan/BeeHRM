@@ -13,13 +13,18 @@ angular.module('beehrm.directives', [])
   };
 }])
 
-.directive('showFooter', ['$rootScope', function($rootScope) {
+.directive('showFooter', ['$rootScope', '$localStorage', function($rootScope, $localStorage) {
   return {
     restrict: 'A',
     link: function($scope, $el) {
       if (!$rootScope.showFooter) {
         $scope.$on("$ionicView.beforeEnter", function() {
-          $rootScope.showFooter = true;
+          if (typeof $localStorage.checkInOut !== 'undefined' && $localStorage.checkInOut === true) {
+            $rootScope.showFooter = true;
+          } else {
+            $rootScope.showFooter = false;
+          }
+
         });
         $scope.$on("$stateChangeStart", function() {
           $rootScope.showFooter = false;

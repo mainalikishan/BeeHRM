@@ -1,6 +1,6 @@
 angular.module('beehrm.controllers', [])
-  .controller('AppCtrl', ['$scope', '$rootScope', '$state', '$timeout', '$localStorage', '$ionicSideMenuDelegate', '$ionicLoading', '$ionicHistory', '$cordovaDialogs', '$cordovaNetwork', 'Auth',
-    function($scope, $rootScope, $state, $timeout, $localStorage, $ionicSideMenuDelegate, $ionicLoading, $ionicHistory, $cordovaDialogs, $cordovaNetwork, Auth) {
+  .controller('AppCtrl', ['$scope', '$rootScope', '$state', '$timeout', '$localStorage', '$ionicSideMenuDelegate', '$ionicLoading', '$ionicHistory', '$cordovaDialogs', '$cordovaNetwork', 'Auth', 'All',
+    function($scope, $rootScope, $state, $timeout, $localStorage, $ionicSideMenuDelegate, $ionicLoading, $ionicHistory, $cordovaDialogs, $cordovaNetwork, Auth, All) {
       $ionicLoading.show({
         template: 'Loading...'
       });
@@ -44,8 +44,34 @@ angular.module('beehrm.controllers', [])
               }, 1000);
             });
           } else {
-            $state.go('app.dashboard', {}, {
-              reload: true
+            if (typeof $localStorage.checkInOutDate === 'undefined') {
+              $localStorage.checkInOutDate = null;
+            }
+            $localStorage.checkInOut = false;
+            All.checkInOut({
+              0: 'date=' + $localStorage.checkInOutDate
+            }).success(function(res) {
+              if (res === 'CHECKINOUTENABLE') {
+                $localStorage.checkInOut = true;
+              }
+
+              if (typeof $localStorage.checkInOutEvent === 'undefined' || $localStorage.checkInOutEvent === 'CHECKEDIN') {
+                $scope.checkInOutLabel = 'CHECK IN';
+              } else {
+                $scope.checkInOutLabel = 'CHECK OUT';
+              }
+
+              $state.go('app.dashboard', {}, {
+                reload: true
+              });
+            }).error(function(e) {
+              $timeout(function() {
+                $ionicLoading.hide();
+                $cordovaDialogs.alert(e.message, 'Whoops', 'OK');
+                $state.go('app.dashboard', {}, {
+                  reload: true
+                });
+              }, 1000);
             });
           }
         } else if (typeof $localStorage.accessData !== 'undefined') {
@@ -116,8 +142,56 @@ angular.module('beehrm.controllers', [])
             });
         };
 
-        $scope.checkIn = function() {
-          $cordovaDialogs.alert('This section will be activated soon', 'Sorry :(', 'OK');
+        $scope.checkIn = function(argument) {
+          if (typeof $localStorage.checkInOutEvent === 'undefined' || $localStorage.checkInOutEvent === 'CHECKEDIN') {
+            $scope.condition = 'Check-In';
+          } else {
+            $scope.condition = 'Check-Out';
+          }
+          $cordovaDialogs.confirm('Wanna ' + $scope.condition + '?', 'BeeHRM', ['Yes', 'Cancel'])
+            .then(function(buttonIndex) {
+              if (buttonIndex == 1) {
+                $ionicLoading.show({
+                  template: 'Loading...'
+                });
+                if ($scope.isOnline) {
+                  if ($scope.condition === 'Check-In') {
+                    All.checkInOutRegister({
+                      inOutMode: 0
+                    }).success(function(res) {
+                      $ionicLoading.hide();
+                      $localStorage.checkInOutEvent = 'CHECKEDOUT';
+                      $scope.checkInOutLabel = 'CHECK OUT';
+                      $cordovaDialogs.alert('You are now Checked In', 'Success', 'OK');
+                    }).error(function(e) {
+                      $timeout(function() {
+                        $ionicLoading.hide();
+                        $cordovaDialogs.alert(e.message, 'Whoops', 'OK');
+                      }, 1000);
+                    });
+                  } else {
+                    All.checkInOutRegister({
+                      inOutMode: 1
+                    }).success(function(res) {
+                      $ionicLoading.hide();
+                      $localStorage.checkInOutDate = res;
+                      $localStorage.checkInOutEvent = 'CHECKEDIN';
+                      $scope.checkInOutLabel = 'CHECK IN';
+                      $localStorage.checkInOut = false;
+                      $cordovaDialogs.alert('You are now Checked Out', 'Success', 'OK');
+                    }).error(function(e) {
+                      $timeout(function() {
+                        $ionicLoading.hide();
+                        $cordovaDialogs.alert(e.message, 'Whoops', 'OK');
+                      }, 1000);
+                    });
+                  }
+                } else {
+                  $ionicLoading.hide();
+                  $cordovaDialogs.alert('Please check your internet connection', 'Whoops', 'OK');
+                }
+              }
+            });
         };
 
       }, false);
@@ -178,6 +252,17 @@ angular.module('beehrm.controllers', [])
         });
       }
 
+      function mobileAttendance() {
+        All.checkInOut({}).success(function(res) {
+          console.log('checkInOut ' + res);
+        }).error(function(e) {
+          $timeout(function() {
+            $ionicLoading.hide();
+            $cordovaDialogs.alert(e.message, 'Whoops', 'OK');
+          }, 1000);
+        });
+      }
+
       function getUserWithLeavesAndPaySlips() {
         Me.include({
           0: 'applications',
@@ -224,6 +309,7 @@ angular.module('beehrm.controllers', [])
             $localStorage.token = res.token;
             if (typeof $localStorage.deviceToken._token !== 'undefined') {
               saveDeviceToken();
+              mobileAttendance();
             }
             getUserWithLeavesAndPaySlips();
           }).error(function(e) {
@@ -420,6 +506,7 @@ angular.module('beehrm.controllers', [])
             }, 1000);
           });
         } else {
+          $ionicLoading.hide();
           $cordovaDialogs.alert('Please check your internet connection', 'Whoops', 'OK')
             .then(function() {
               $state.go('app.dashboard');
@@ -874,6 +961,7 @@ angular.module('beehrm.controllers', [])
                     }, 1000);
                   });
                 } else {
+                  $ionicLoading.hide();
                   $cordovaDialogs.alert('Please check your internet connection', 'Whoops', 'OK');
                 }
               }
