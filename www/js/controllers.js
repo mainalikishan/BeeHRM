@@ -157,12 +157,17 @@ angular.module('beehrm.controllers', [])
                 if ($scope.isOnline) {
                   if ($scope.condition === 'Check-In') {
                     All.checkInOutRegister({
-                      inOutMode: 0
+                      inOutMode: 0,
+                      date: $localStorage.checkInOutDate
                     }).success(function(res) {
                       $ionicLoading.hide();
-                      $localStorage.checkInOutEvent = 'CHECKEDOUT';
-                      $scope.checkInOutLabel = 'CHECK OUT';
-                      $cordovaDialogs.alert('You are now Checked In', 'Success', 'OK');
+                      if (res === 'CHECKINOUTDISABLE') {
+                        $cordovaDialogs.alert('You are already checked out for today', 'Whoops', 'OK');
+                      } else {
+                        $localStorage.checkInOutEvent = 'CHECKEDOUT';
+                        $scope.checkInOutLabel = 'CHECK OUT';
+                        $cordovaDialogs.alert('You are now Checked In', 'Success', 'OK');
+                      }
                     }).error(function(e) {
                       $timeout(function() {
                         $ionicLoading.hide();
@@ -171,14 +176,20 @@ angular.module('beehrm.controllers', [])
                     });
                   } else {
                     All.checkInOutRegister({
-                      inOutMode: 1
+                      inOutMode: 1,
+                      date: $localStorage.checkInOutDate
                     }).success(function(res) {
                       $ionicLoading.hide();
-                      $localStorage.checkInOutDate = res;
-                      $localStorage.checkInOutEvent = 'CHECKEDIN';
-                      $scope.checkInOutLabel = 'CHECK IN';
-                      $localStorage.checkInOut = false;
-                      $cordovaDialogs.alert('You are now Checked Out', 'Success', 'OK');
+                      if (res === 'CHECKINOUTDISABLE') {
+                        $cordovaDialogs.alert('You are already checked out for today', 'Whoops', 'OK');
+                      } else {
+                        $localStorage.checkInOutDate = res;
+                        $localStorage.checkInOutEvent = 'CHECKEDIN';
+                        $scope.checkInOutLabel = 'CHECK IN';
+                        $localStorage.checkInOut = false;
+                        $cordovaDialogs.alert('You are now Checked Out', 'Success', 'OK');
+                      }
+
                     }).error(function(e) {
                       $timeout(function() {
                         $ionicLoading.hide();
