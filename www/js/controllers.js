@@ -816,8 +816,8 @@ angular.module('beehrm.controllers', [])
   }
 ])
 
-.controller('ApplyLeaveCtrl', ['$scope', '$rootScope', '$ionicModal', '$timeout', '$localStorage', '$cordovaNetwork', '$cordovaDialogs', '$ionicLoading', '$filter', 'All',
-  function($scope, $rootScope, $ionicModal, $timeout, $localStorage, $cordovaNetwork, $cordovaDialogs, $ionicLoading, $filter, All) {
+.controller('ApplyLeaveCtrl', ['$scope', '$rootScope', '$ionicHistory', '$ionicModal', '$timeout', '$localStorage', '$cordovaNetwork', '$cordovaDialogs', '$ionicLoading', '$filter', '$state', 'All',
+  function($scope, $rootScope, $ionicHistory, $ionicModal, $timeout, $localStorage, $cordovaNetwork, $cordovaDialogs, $ionicLoading, $filter, $state, All) {
     document.addEventListener("deviceready", function() {
       $localStorage.disableApplyLeave = true;
       $scope.isOffline = $cordovaNetwork.isOffline();
@@ -962,8 +962,23 @@ angular.module('beehrm.controllers', [])
                             'startDate': $scope.leaveData.startDate,
                             'endDate': $scope.leaveData.startDate
                           };
-                          $scope.modal.hide();
+                          $ionicHistory.clearCache(['app.leaves']);
+                          $timeout(function() {
+                            $ionicLoading.hide();
+                            $state.go('app.leavesBalance', {}, {
+                              reload: true
+                            });
+                            $scope.modal.hide();
+                          }, 50);
                         });
+                      // $scope.$on('modal.hidden', function() {
+                      //   $ionicHistory.clearCache(['app.leaves']);
+                      //   $timeout(function() {
+                      //     $state.go('app.leavesBalance', {}, {
+                      //       reload: true
+                      //     });
+                      //   }, 50);
+                      // });
                     }, 50);
                   }).error(function(e) {
                     $timeout(function() {

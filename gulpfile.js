@@ -78,7 +78,7 @@ gulp.task('jsApp', function() {
         'www/js/directive.js',
         'www/js/controllers.js'
       ])
-    // .pipe(stripDebug())
+    .pipe(stripDebug())
     .pipe(uglify('beehrm.min.js', {
       mangle: true,
       output: {
