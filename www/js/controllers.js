@@ -26,6 +26,44 @@ angular.module('beehrm.controllers', [])
           $scope.isOnline = false;
         });
 
+        function checkInOut() {
+          if (typeof $localStorage.checkInOutDate === 'undefined') {
+            $localStorage.checkInOutDate = null;
+          }
+          $localStorage.checkInOut = false;
+          All.checkInOut({
+            0: 'date=' + $localStorage.checkInOutDate
+          }).success(function(res) {
+            if (res === 'CHECKINOUTENABLE') {
+              $localStorage.checkInOut = true;
+            }
+
+            if (res === 'CHECKOUTENABLE') {
+              $localStorage.checkInOut = true;
+              $scope.checkInOutLabel = 'CHECK OUT';
+              $localStorage.checkInOutEvent = 'CHECKEDOUT';
+            } else {
+              if (typeof $localStorage.checkInOutEvent === 'undefined' || $localStorage.checkInOutEvent === 'CHECKEDIN') {
+                $scope.checkInOutLabel = 'CHECK IN';
+              } else {
+                $scope.checkInOutLabel = 'CHECK OUT';
+              }
+            }
+
+            $state.go('app.dashboard', {}, {
+              reload: true
+            });
+          }).error(function(e) {
+            $timeout(function() {
+              $ionicLoading.hide();
+              $cordovaDialogs.alert(e.message, 'Whoops', 'OK');
+              $state.go('app.dashboard', {}, {
+                reload: true
+              });
+            }, 1000);
+          });
+        }
+
         if (typeof $localStorage.userInfo !== 'undefined') {
           $rootScope.userInfo = $localStorage.userInfo;
           $rootScope.userInfo.image = ($localStorage.userInfo.image === 'data:image/png;base64,') ? 'img/profile_avatar.png' : $localStorage.userInfo.image;
@@ -34,9 +72,7 @@ angular.module('beehrm.controllers', [])
               deviceToken: $localStorage.deviceToken._token
             }).success(function(res) {
               $localStorage.deviceTokenRegistered = true;
-              $state.go('app.dashboard', {}, {
-                reload: true
-              });
+              checkInOut();
             }).error(function(e) {
               $timeout(function() {
                 $ionicLoading.hide();
@@ -44,36 +80,9 @@ angular.module('beehrm.controllers', [])
               }, 1000);
             });
           } else {
-            if (typeof $localStorage.checkInOutDate === 'undefined') {
-              $localStorage.checkInOutDate = null;
-            }
-            $localStorage.checkInOut = false;
-            All.checkInOut({
-              0: 'date=' + $localStorage.checkInOutDate
-            }).success(function(res) {
-              if (res === 'CHECKINOUTENABLE') {
-                $localStorage.checkInOut = true;
-              }
-
-              if (typeof $localStorage.checkInOutEvent === 'undefined' || $localStorage.checkInOutEvent === 'CHECKEDIN') {
-                $scope.checkInOutLabel = 'CHECK IN';
-              } else {
-                $scope.checkInOutLabel = 'CHECK OUT';
-              }
-
-              $state.go('app.dashboard', {}, {
-                reload: true
-              });
-            }).error(function(e) {
-              $timeout(function() {
-                $ionicLoading.hide();
-                $cordovaDialogs.alert(e.message, 'Whoops', 'OK');
-                $state.go('app.dashboard', {}, {
-                  reload: true
-                });
-              }, 1000);
-            });
+            checkInOut();
           }
+
         } else if (typeof $localStorage.accessData !== 'undefined') {
           $state.go('app.login', {}, {
             reload: true
