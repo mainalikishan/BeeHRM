@@ -110,6 +110,26 @@ angular.module('beehrm', ['ionic', 'ionic.service.core', 'ngCordova', 'ngStorage
     }
   })
 
+  .state('app.holidays', {
+    url: '/holidays',
+    views: {
+      'menuContent': {
+        templateUrl: 'templates/dist/holidays.html',
+        controller: 'HolidaysCtrl'
+      }
+    }
+  })
+
+  .state('app.holiday', {
+    url: '/holidays/:holidayId',
+    views: {
+      'menuContent': {
+        templateUrl: 'templates/dist/holiday.html',
+        controller: 'HolidayCtrl'
+      }
+    }
+  })
+
   .state('app.notifications', {
     url: '/notifications',
     views: {

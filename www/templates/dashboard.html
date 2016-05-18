@@ -3,7 +3,7 @@
     <button class="button button-icon button-clear ion-navicon" menu-toggle="left">
     </button>
   </ion-nav-buttons>
-  <ion-content class="has-footer has-tabs">
+  <ion-content ng-class="{'has-tabs': checkInOut == false, 'has-footer has-tabs': checkInOut == true } ">
     <div class="dashboard">
       <!-- style="background-image: url(img/profile-bg.jpg);" -->
       <div class="profile-bg">

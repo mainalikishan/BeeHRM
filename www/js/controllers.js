@@ -31,15 +31,18 @@ angular.module('beehrm.controllers', [])
             $localStorage.checkInOutDate = null;
           }
           $localStorage.checkInOut = false;
+          $rootScope.checkInOut = false;
           All.checkInOut({
             0: 'date=' + $localStorage.checkInOutDate
           }).success(function(res) {
             if (res === 'CHECKINOUTENABLE') {
               $localStorage.checkInOut = true;
+              $rootScope.checkInOut = true;
             }
 
             if (res === 'CHECKOUTENABLE') {
               $localStorage.checkInOut = true;
+              $rootScope.checkInOut = true;
               $scope.checkInOutLabel = 'CHECK OUT';
               $localStorage.checkInOutEvent = 'CHECKEDOUT';
             } else {
@@ -453,6 +456,94 @@ angular.module('beehrm.controllers', [])
         $state.go('app.dashboard');
       }
       $ionicLoading.hide();
+    }, 1000);
+  }
+])
+
+.controller('HolidaysCtrl', ['$scope', '$rootScope', '$state', '$localStorage', '$timeout', '$cordovaNetwork', '$ionicLoading', '$cordovaDialogs', 'All',
+  function($scope, $rootScope, $state, $localStorage, $timeout, $cordovaNetwork, $ionicLoading, $cordovaDialogs, All) {
+    $scope.isOffline = true;
+    document.addEventListener("deviceready", function() {
+      $scope.isOffline = $cordovaNetwork.isOffline();
+      $rootScope.$on('$cordovaNetwork:online', function(event, networkState) {
+        $scope.isOffline = false;
+        if (typeof $localStorage.token !== 'undefined') {
+          $ionicLoading.show({
+            template: 'Syncing data...'
+          });
+          getHolidays();
+        }
+      });
+
+      $rootScope.$on('$cordovaNetwork:offline', function(event, networkState) {
+        $scope.isOffline = true;
+      });
+
+      if (typeof $localStorage.token !== 'undefined') {
+        if ($scope.isOffline) {
+          $rootScope.holidays = $localStorage.holidays;
+        } else {
+          getHolidays();
+        }
+      }
+
+    }, false);
+
+    function getHolidays() {
+      if (typeof $localStorage.accessData !== 'undefined') {
+        $ionicLoading.show({
+          template: 'Loading...'
+        });
+        All.holidays({}).success(function(res) {
+          $localStorage.holidays = res.data;
+          $rootScope.holidays = res.data;
+          $ionicLoading.hide();
+        }).error(function(e) {
+          $timeout(function() {
+            $ionicLoading.hide();
+            $cordovaDialogs.alert(e.message, 'Whoops', 'OK');
+          }, 1000);
+        });
+      }
+    }
+  }
+])
+
+.controller('HolidayCtrl', ['$scope', '$rootScope', '$state', '$ionicLoading', '$timeout', '$localStorage', '$stateParams', '$filter', '$cordovaDialogs',
+  function($scope, $rootScope, $state, $ionicLoading, $timeout, $localStorage, $stateParams, $filter, $cordovaDialogs) {
+    $scope.holidayShow = false;
+
+    $ionicLoading.show({
+      template: 'Loading...'
+    });
+
+    var holidayId = $stateParams.holidayId;
+
+    function fetchDetails(holidayId) {
+      var found = $filter('filter')($rootScope.holidays, {
+        id: holidayId
+      });
+
+      if (found.length) {
+        return found[0];
+      } else {
+        return 'NOTFOUND';
+      }
+    }
+
+    var hasDetails = fetchDetails(holidayId);
+
+    $timeout(function() {
+      $ionicLoading.hide();
+      if (hasDetails == 'NOTFOUND') {
+        $cordovaDialogs.alert('Something went wrong', 'Whoops', 'OK')
+          .then(function() {
+            $state.go('app.holidays');
+          });
+      } else {
+        $scope.holidayDetails = hasDetails;
+        $scope.holidayShow = true;
+      }
     }, 1000);
   }
 ])

@@ -1,0 +1,13 @@
+<ion-view view-title="Holidays" transitiontype="slide" direction="right" go-native show-tabs>
+  <ion-content class="list-page has-tabs">
+    <ion-list class="calender">
+      <ion-item ng-repeat="item in holidays" item="item" href="#/app/holidays/{{item.id}}" class="item-remove-animate item-icon-list">
+        <span class="item-calender">
+          <span class="day">{{ item.day }}</span>
+          <span class="month">{{ item.month }}</span>
+        </span>
+        <h2 class="truncate">{{ item.title }}</h2>
+      </ion-item>
+    </ion-list>
+  </ion-content>
+</ion-view>

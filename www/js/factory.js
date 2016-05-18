@@ -172,6 +172,17 @@ angular.module('beehrm.factories', [])
         }
       });
     },
+    holidays: function(input) {
+      return $http({
+        url: $localStorage.accessData.org_app_url + '/holidays',
+        method: 'GET',
+        dataType: 'json',
+        headers: {
+          "Content-Type": "application/x.vdn.v1+json",
+          "Authorization": "bearer " + $localStorage.token
+        }
+      });
+    },
     submitLeaveApplication: function(input) {
       return $http({
         url: $localStorage.accessData.org_app_url + '/leave-application',
