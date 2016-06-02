@@ -1,13 +1,28 @@
-<ion-view view-title="My Salaries"
-transitiontype="slide" direction="left" go-native>
-    <ion-content class="list-page" ng-show="payslipsShow">
-        <ion-list>
-            <ion-item ng-repeat="item in payslip" item="item" href="#/app/payslips/{{item.id}}" class="item-remove-animate item-icon-list">
-                <h2><i class="ion-android-calendar"></i> {{ item.from | date:'MMMM' }}</h2>
-                <span class="badge">
-                    {{ item.iso_code }}. {{ item.net_pay }}
-                </span>
-            </ion-item>
-        </ion-list>
-    </ion-content>
+<ion-view class="payroll" view-title="My Salaries" transitiontype="slide" direction="left" go-native>
+  <ion-content class="list-page" ng-show="payslipsShow">
+    <ion-list>
+      <ion-item ng-if="item.salary_display_format==='N'" item="item" ng-repeat="item in payslip" href="#/app/payslips/{{item.id}}">
+        <div style="padding: 5px; background-color: #EEE; width:100%; margin-bottom: 5px;">
+          <span ng-bind-html="item.from_np"></span>
+          -
+          <span ng-bind-html="item.to_np"></span>
+        </div>
+        <div style="font-weight: bold;">
+          {{ item.iso_code }}.{{ item.net_pay }}
+        </div>
+      </ion-item>
+
+    </ion-list>
+    <ion-list>
+      <ion-item ng-if="item.salary_display_format==='E'" item="item" ng-repeat="item in payslip" href="#/app/payslips/{{item.id}}" class="item-icon-list">
+        <h2>
+          <i class="ion-android-calendar"></i>
+          {{ item.from | date:'MMMM' }}</h2>
+        <span class="badge">
+          {{ item.iso_code }}.
+          {{ item.net_pay }}
+        </span>
+      </ion-item>
+    </ion-list>
+  </ion-content>
 </ion-view>

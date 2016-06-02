@@ -386,3 +386,6 @@ h6,
   height: 28px;
   stroke: #F8C300;
   fill: #F8C300; }
+
+.payroll .item-content {
+  padding: 16px 16px 16px 16px; }
