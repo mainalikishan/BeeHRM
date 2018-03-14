@@ -7,8 +7,6 @@ plugins
 **Add these plugins in the project:**
 
 ```
-#!python
-
 cordova plugin add ionic-plugin-keyboard
 cordova plugin add https://github.com/Telerik-Verified-Plugins/NativePageTransitions
 cordova plugin add cordova-plugin-console
